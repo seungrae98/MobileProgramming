@@ -15,7 +15,7 @@ class CardDataViewModel(): ViewModel() {
             listOf<String>("chicken", "garlic"),
             "1",
             listOf<String>("http://www.example1.com"),
-            true
+            false
         )
         cardList.add(cardDataSample1)
 
@@ -25,7 +25,7 @@ class CardDataViewModel(): ViewModel() {
             listOf<String>("pork"),
             "2",
             listOf<String>("http://www.example2.com"),
-            true
+            false
         )
         cardList.add(cardDataSample2)
 
@@ -35,7 +35,7 @@ class CardDataViewModel(): ViewModel() {
             listOf<String>("milk", "egg"),
             "3",
             listOf<String>("http://www.example3.com"),
-            true
+            false
         )
         cardList.add(cardDataSample3)
 

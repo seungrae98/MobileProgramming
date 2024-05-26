@@ -14,13 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.fridgefriend.viewmodel.LogInViewModel
+import com.example.fridgefriend.viewmodel.LogInDataViewModel
 import com.example.fridgefriend.navigation.Routes
 
 @Composable
 fun LogInScreen(navController: NavHostController) {
 
-    val navViewModel: LogInViewModel = viewModel(viewModelStoreOwner = LocalNavGraphViewModelStoreOwner.current)
+    val logInViewModel: LogInDataViewModel = viewModel(viewModelStoreOwner = LocalNavGraphViewModelStoreOwner.current)
 
     var userID by remember {
         mutableStateOf("")
@@ -30,20 +30,19 @@ fun LogInScreen(navController: NavHostController) {
         mutableStateOf("")
     }
 
-    var loginresult = navViewModel.checkInfo(userID, userPasswd)
+    var loginresult = logInViewModel.checkInfo(userID, userPasswd)
 
     Column(modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
 
         Button(onClick = {
-            navViewModel.setUserInfo(userID, userPasswd)
 
             // 로그인 시 조건 추가
+            logInViewModel.checkInfo("", "")
 
-
-            navViewModel.loginStatus.value = true
-            if (navViewModel.loginStatus.value) {
+            logInViewModel.loginStatus.value = true
+            if (logInViewModel.loginStatus.value) {
                 navController.navigate(Routes.Main.route) {
                     popUpTo(Routes.Login.route) {
                         inclusive = true
@@ -56,7 +55,8 @@ fun LogInScreen(navController: NavHostController) {
         }
 
         Button(onClick = {
-            navViewModel.setUserInfo(userID, userPasswd)
+
+
             navController.navigate(Routes.Register.route)
         }) {
             Text(text = "회원가입")

@@ -1,11 +1,5 @@
 package com.example.fridgefriend.screen
 
-
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,7 +18,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.fridgefriend.navigation.BottomNavigationBar
-import com.example.fridgefriend.viewmodel.LogInViewModel
+import com.example.fridgefriend.viewmodel.LogInDataViewModel
 import com.example.fridgefriend.navigation.Routes
 import com.example.fridgefriend.navigation.mainNavGraph
 
@@ -48,7 +42,7 @@ fun MainScreen(navController: NavHostController) {
         LocalNavGraphViewModelStoreOwner provides navStoreOwner
     ) {
 
-        val navViewModel: LogInViewModel =
+        val navViewModel: LogInDataViewModel =
             viewModel(viewModelStoreOwner = LocalNavGraphViewModelStoreOwner.current)
 
         Scaffold(
