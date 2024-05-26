@@ -21,8 +21,8 @@ import com.example.fridgefriend.viewmodel.UserDataViewModel
 @Composable
 fun SearchScreen(navController: NavHostController,
                  userDataViewModel: UserDataViewModel,
-                 cardDataViewModel: CardDataViewModel,
-                 ingredientDataViewModel: IngredientDataViewModel) {
+                 cardDataViewModel: CardDataViewModel = viewModel(),
+                 ingredientDataViewModel: IngredientDataViewModel = viewModel()) {
 
     val scrollState = rememberScrollState()
     val userIndex = userDataViewModel.userIndex.value

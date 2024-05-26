@@ -16,15 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 import com.example.fridgefriend.navigation.Routes
 
 @Composable
-fun LogInScreen(navController: NavHostController, userDataViewModel: UserDataViewModel) {
-
-//    val userDataViewModel: UserDataViewModel = viewModel(viewModelStoreOwner = LocalNavGraphViewModelStoreOwner.current)
+fun LogInScreen(navController: NavHostController,
+                userDataViewModel: UserDataViewModel) {
 
     var userID by remember {
         mutableStateOf("")
@@ -57,7 +55,7 @@ fun LogInScreen(navController: NavHostController, userDataViewModel: UserDataVie
 
             if (loginResult) {
                 userDataViewModel.loginStatus.value = true
-                navController.navigate(Routes.Main.route) {
+                navController.navigate(Routes.Home.route) {
                     popUpTo(Routes.Login.route) {
                         inclusive = true
                     }

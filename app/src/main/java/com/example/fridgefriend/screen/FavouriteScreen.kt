@@ -19,8 +19,8 @@ import com.example.fridgefriend.viewmodel.UserDataViewModel
 
 @Composable
 fun FavouriteScreen(navController: NavHostController,
-                    cardDataViewModel: CardDataViewModel,
-                    userDataViewModel: UserDataViewModel) {
+                    userDataViewModel: UserDataViewModel,
+                    cardDataViewModel: CardDataViewModel = viewModel()) {
 
     val scrollState = rememberScrollState()
     val userIndex = userDataViewModel.userIndex.value

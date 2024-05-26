@@ -14,8 +14,7 @@ class CardDataViewModel(): ViewModel() {
             "NameOfFood1",
             listOf<String>("chicken", "garlic"),
             "1",
-            listOf<String>("http://www.example1.com"),
-            false
+            listOf<String>("http://www.example1.com")
         )
         cardList.add(cardDataSample1)
 
@@ -24,8 +23,7 @@ class CardDataViewModel(): ViewModel() {
             "NameOfFood2",
             listOf<String>("pork"),
             "2",
-            listOf<String>("http://www.example2.com"),
-            false
+            listOf<String>("http://www.example2.com")
         )
         cardList.add(cardDataSample2)
 
@@ -34,8 +32,7 @@ class CardDataViewModel(): ViewModel() {
             "NameOfFood3",
             listOf<String>("milk", "egg"),
             "3",
-            listOf<String>("http://www.example3.com"),
-            false
+            listOf<String>("http://www.example3.com")
         )
         cardList.add(cardDataSample3)
 
