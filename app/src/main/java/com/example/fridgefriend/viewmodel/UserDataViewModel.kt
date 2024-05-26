@@ -4,9 +4,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 
-class LogInDataViewModel : ViewModel(){
+class UserDataViewModel : ViewModel(){
 
-    var userList = mutableStateListOf<LogInData>()
+    var userList = mutableStateListOf<UserData>()
         private set
 
     var userIndex = mutableStateOf(0)
@@ -14,7 +14,7 @@ class LogInDataViewModel : ViewModel(){
 
     init {
         // 예시로 하드코딩 했지만, DB에서 받아오는 방법도 있음
-        val userDataSample1 = LogInData(
+        val userDataSample1 = UserData(
             "haandy98",
             "1234",
             "seungrae",

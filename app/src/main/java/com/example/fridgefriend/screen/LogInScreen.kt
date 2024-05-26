@@ -14,13 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.fridgefriend.viewmodel.LogInDataViewModel
+import com.example.fridgefriend.viewmodel.UserDataViewModel
 import com.example.fridgefriend.navigation.Routes
 
 @Composable
 fun LogInScreen(navController: NavHostController) {
 
-    val logInViewModel: LogInDataViewModel = viewModel(viewModelStoreOwner = LocalNavGraphViewModelStoreOwner.current)
+    val logInViewModel: UserDataViewModel = viewModel(viewModelStoreOwner = LocalNavGraphViewModelStoreOwner.current)
 
     var userID by remember {
         mutableStateOf("")

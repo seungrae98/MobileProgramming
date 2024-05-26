@@ -15,21 +15,21 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fridgefriend.viewmodel.CardDataViewModel
-import com.example.fridgefriend.viewmodel.LogInDataViewModel
+import com.example.fridgefriend.viewmodel.UserDataViewModel
 
 @Composable
 fun FavouriteScreen(navController: NavHostController,
                     cardDataViewModel: CardDataViewModel = viewModel(),
-                    logInDataViewModel: LogInDataViewModel = viewModel()) {
+                    userDataViewModel: UserDataViewModel = viewModel()) {
 
     // 간단하게 하드코딩된 메뉴 중 좋아요 true 인 것만 출력하도록 했음.
 
     val scrollState = rememberScrollState()
-    val userIndex = logInDataViewModel.userIndex.value
+    val userIndex = userDataViewModel.userIndex.value
 
     repeat(cardDataViewModel.cardList.size) {
-        repeat(logInDataViewModel.userList[userIndex].favourite.size) {fav ->
-            if (cardDataViewModel.cardList[it].cardID == logInDataViewModel.userList[userIndex].favourite[fav])
+        repeat(userDataViewModel.userList[userIndex].favourite.size) { fav ->
+            if (cardDataViewModel.cardList[it].cardID == userDataViewModel.userList[userIndex].favourite[fav])
                 cardDataViewModel.cardList[it].like = true
         }
     }
@@ -42,12 +42,12 @@ fun FavouriteScreen(navController: NavHostController,
     ) {
 
         Text(
-            text = logInDataViewModel.userList[userIndex].name,
+            text = userDataViewModel.userList[userIndex].name,
             style = MaterialTheme.typography.bodyLarge,
             fontSize = 30.sp
         )
         Text(
-            text = logInDataViewModel.userList[userIndex].favourite.joinToString(),
+            text = userDataViewModel.userList[userIndex].favourite.joinToString(),
             style = MaterialTheme.typography.bodyLarge,
             fontSize = 30.sp
         )

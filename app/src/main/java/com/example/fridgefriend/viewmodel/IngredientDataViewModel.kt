@@ -32,6 +32,14 @@ class IngredientDataViewModel(): ViewModel() {
             "20240526"
         )
         ingredientList.add(IngredientDataSample3)
+
+        val IngredientDataSample4 = IngredientData(
+            4,
+            "NameOfIngredient4",
+            false,
+            "20240527"
+        )
+        ingredientList.add(IngredientDataSample4)
     }
 
     // 보유 상태 변경

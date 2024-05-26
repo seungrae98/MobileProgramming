@@ -18,7 +18,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.fridgefriend.navigation.BottomNavigationBar
-import com.example.fridgefriend.viewmodel.LogInDataViewModel
+import com.example.fridgefriend.viewmodel.UserDataViewModel
 import com.example.fridgefriend.navigation.Routes
 import com.example.fridgefriend.navigation.mainNavGraph
 
@@ -42,7 +42,7 @@ fun MainScreen(navController: NavHostController) {
         LocalNavGraphViewModelStoreOwner provides navStoreOwner
     ) {
 
-        val navViewModel: LogInDataViewModel =
+        val navViewModel: UserDataViewModel =
             viewModel(viewModelStoreOwner = LocalNavGraphViewModelStoreOwner.current)
 
         Scaffold(
