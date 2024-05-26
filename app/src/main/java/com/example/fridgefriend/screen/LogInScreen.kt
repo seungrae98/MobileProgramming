@@ -22,9 +22,9 @@ import com.example.fridgefriend.viewmodel.UserDataViewModel
 import com.example.fridgefriend.navigation.Routes
 
 @Composable
-fun LogInScreen(navController: NavHostController) {
+fun LogInScreen(navController: NavHostController, userDataViewModel: UserDataViewModel) {
 
-    val userDataViewModel: UserDataViewModel = viewModel(viewModelStoreOwner = LocalNavGraphViewModelStoreOwner.current)
+//    val userDataViewModel: UserDataViewModel = viewModel(viewModelStoreOwner = LocalNavGraphViewModelStoreOwner.current)
 
     var userID by remember {
         mutableStateOf("")

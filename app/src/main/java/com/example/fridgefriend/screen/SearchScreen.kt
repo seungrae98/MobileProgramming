@@ -15,20 +15,22 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fridgefriend.viewmodel.CardDataViewModel
+import com.example.fridgefriend.viewmodel.IngredientDataViewModel
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 
 @Composable
 fun SearchScreen(navController: NavHostController,
-                 cardDataViewModel: CardDataViewModel = viewModel(),
-                 logInDataViewModel: UserDataViewModel = viewModel()) {
+                 userDataViewModel: UserDataViewModel,
+                 cardDataViewModel: CardDataViewModel,
+                 ingredientDataViewModel: IngredientDataViewModel) {
 
     val scrollState = rememberScrollState()
-    val userIndex = logInDataViewModel.userIndex.value
+    val userIndex = userDataViewModel.userIndex.value
 
     // 해당 유저의 좋아요 목록을 메뉴 목록(viewmodel)에 적용
     repeat(cardDataViewModel.cardList.size) {
-        repeat(logInDataViewModel.userList[userIndex].favourite.size) {fav ->
-            if (cardDataViewModel.cardList[it].cardID == logInDataViewModel.userList[userIndex].favourite[fav])
+        repeat(userDataViewModel.userList[userIndex].favourite.size) {fav ->
+            if (cardDataViewModel.cardList[it].cardID == userDataViewModel.userList[userIndex].favourite[fav])
                 cardDataViewModel.cardList[it].like = true
         }
     }
@@ -43,12 +45,12 @@ fun SearchScreen(navController: NavHostController,
     ) {
 
         Text(
-            text = logInDataViewModel.userList[userIndex].name,
+            text = userDataViewModel.userList[userIndex].name,
             style = MaterialTheme.typography.bodyLarge,
             fontSize = 30.sp
         )
         Text(
-            text = logInDataViewModel.userList[userIndex].favourite.joinToString(),
+            text = userDataViewModel.userList[userIndex].favourite.joinToString(),
             style = MaterialTheme.typography.bodyLarge,
             fontSize = 30.sp
         )
@@ -70,6 +72,11 @@ fun SearchScreen(navController: NavHostController,
             )
             Text(
                 text = cardDataViewModel.cardList[it].recipeLink.joinToString(),
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 30.sp
+            )
+            Text(
+                text = cardDataViewModel.cardList[it].like.toString(),
                 style = MaterialTheme.typography.bodyLarge,
                 fontSize = 30.sp
             )

@@ -21,6 +21,8 @@ import com.example.fridgefriend.navigation.BottomNavigationBar
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 import com.example.fridgefriend.navigation.Routes
 import com.example.fridgefriend.navigation.mainNavGraph
+import com.example.fridgefriend.viewmodel.CardDataViewModel
+import com.example.fridgefriend.viewmodel.IngredientDataViewModel
 
 @Composable
 fun rememberViewModelStoreOwner(): ViewModelStoreOwner {
@@ -35,7 +37,7 @@ val LocalNavGraphViewModelStoreOwner =
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavHostController, ) {
+fun MainScreen(navController: NavHostController) {
     val navStoreOwner = rememberViewModelStoreOwner()
 
     CompositionLocalProvider(
@@ -43,6 +45,10 @@ fun MainScreen(navController: NavHostController, ) {
     ) {
 
         val userDataViewModel: UserDataViewModel =
+            viewModel(viewModelStoreOwner = LocalNavGraphViewModelStoreOwner.current)
+        val cardDataViewModel: CardDataViewModel =
+            viewModel(viewModelStoreOwner = LocalNavGraphViewModelStoreOwner.current)
+        val ingredientDataViewModel: IngredientDataViewModel =
             viewModel(viewModelStoreOwner = LocalNavGraphViewModelStoreOwner.current)
 
         Scaffold(
@@ -63,14 +69,14 @@ fun MainScreen(navController: NavHostController, ) {
                     startDestination = Routes.Login.route
                 ) {
                     composable(route = Routes.Login.route) {
-                        LogInScreen(navController)
+                        LogInScreen(navController, userDataViewModel)
                     }
 
                     composable(route = Routes.Register.route) {
-                        RegisterScreen(navController)
+                        RegisterScreen(navController, userDataViewModel)
                     }
 
-                    mainNavGraph(navController)
+                    mainNavGraph(navController, userDataViewModel, cardDataViewModel, ingredientDataViewModel)
 
                 }
             }

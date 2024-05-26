@@ -8,20 +8,26 @@ import com.example.fridgefriend.screen.FavouriteScreen
 import com.example.fridgefriend.screen.FridgeScreen
 import com.example.fridgefriend.screen.SearchScreen
 import com.example.fridgefriend.screen.SettingsScreen
+import com.example.fridgefriend.viewmodel.CardDataViewModel
+import com.example.fridgefriend.viewmodel.IngredientDataViewModel
+import com.example.fridgefriend.viewmodel.UserDataViewModel
 
-fun NavGraphBuilder.mainNavGraph(navController: NavHostController){
+fun NavGraphBuilder.mainNavGraph(navController: NavHostController,
+                                 userDataViewModel: UserDataViewModel,
+                                 cardDataViewModel: CardDataViewModel,
+                                 ingredientDataViewModel: IngredientDataViewModel){
     navigation(startDestination = "Fridge", route="Main"){
 
         composable(route = Routes.Fridge.route) {
-            FridgeScreen(navController)
+            FridgeScreen(navController, userDataViewModel, cardDataViewModel, ingredientDataViewModel)
         }
 
         composable(route = Routes.Search.route) {
-            SearchScreen(navController)
+            SearchScreen(navController, userDataViewModel, cardDataViewModel, ingredientDataViewModel)
         }
 
         composable(route = Routes.Favourite.route) {
-            FavouriteScreen(navController)
+            FavouriteScreen(navController, cardDataViewModel, userDataViewModel)
         }
 
         composable(route = Routes.Settings.route) {

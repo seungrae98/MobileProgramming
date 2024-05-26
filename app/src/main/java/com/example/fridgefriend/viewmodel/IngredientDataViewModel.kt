@@ -12,7 +12,7 @@ class IngredientDataViewModel(): ViewModel() {
         val IngredientDataSample1 = IngredientData(
             1,
             "NameOfIngredient1",
-            true,
+            false,
             "00000000"
         )
         ingredientList.add(IngredientDataSample1)

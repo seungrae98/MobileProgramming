@@ -14,14 +14,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.fridgefriend.viewmodel.CardDataViewModel
 import com.example.fridgefriend.viewmodel.IngredientDataViewModel
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 
 
 @Composable
 fun FridgeScreen(navController: NavHostController,
-                 ingredientDataViewModel: IngredientDataViewModel = viewModel(),
-                 userDataViewModel: UserDataViewModel = viewModel()) {
+                 userDataViewModel: UserDataViewModel,
+                 cardDataViewModel: CardDataViewModel,
+                 ingredientDataViewModel: IngredientDataViewModel) {
 
     val scrollState = rememberScrollState()
     val userIndex = userDataViewModel.userIndex.value
@@ -51,7 +53,7 @@ fun FridgeScreen(navController: NavHostController,
             fontSize = 30.sp
         )
         Text(
-            text = userDataViewModel.userList[userIndex].favourite.joinToString(),
+            text = userDataViewModel.userList[userIndex].contain.keys.joinToString(),
             style = MaterialTheme.typography.bodyLarge,
             fontSize = 30.sp
         )
