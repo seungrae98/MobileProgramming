@@ -26,13 +26,18 @@ fun FridgeScreen(navController: NavHostController,
     val scrollState = rememberScrollState()
     val userIndex = userDataViewModel.userIndex.value
 
+    // 해당 유저의 재료 목록을 재료 목록(viewmodel)에 적용
     repeat(ingredientDataViewModel.ingredientList.size) {
         repeat(userDataViewModel.userList[userIndex].contain.size) { con ->
-            if (ingredientDataViewModel.ingredientList[it].id == userDataViewModel.userList[userIndex].contain.keys.indexOf(con))
+            if (ingredientDataViewModel.ingredientList[it].id == userDataViewModel.userList[userIndex].contain.keys.elementAt(con)) {
                 ingredientDataViewModel.ingredientList[it].contain = true
+                ingredientDataViewModel.changeExpireDate(it, userDataViewModel.userList[userIndex].contain.values.elementAt(con))
+            }
         }
     }
 
+    // 현재는 모든 재료 출력 수행
+    // TODO: 출력 방법, 보유 재료 추가 기능, 유통기한 입력/수정 기능
     Column(modifier = Modifier
         .fillMaxSize()
         .verticalScroll(scrollState),

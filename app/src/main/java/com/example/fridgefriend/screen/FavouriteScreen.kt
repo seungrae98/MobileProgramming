@@ -22,11 +22,10 @@ fun FavouriteScreen(navController: NavHostController,
                     cardDataViewModel: CardDataViewModel = viewModel(),
                     userDataViewModel: UserDataViewModel = viewModel()) {
 
-    // 간단하게 하드코딩된 메뉴 중 좋아요 true 인 것만 출력하도록 했음.
-
     val scrollState = rememberScrollState()
     val userIndex = userDataViewModel.userIndex.value
 
+    // 해당 유저의 좋아요 목록을 메뉴 목록(viewmodel)에 적용
     repeat(cardDataViewModel.cardList.size) {
         repeat(userDataViewModel.userList[userIndex].favourite.size) { fav ->
             if (cardDataViewModel.cardList[it].cardID == userDataViewModel.userList[userIndex].favourite[fav])

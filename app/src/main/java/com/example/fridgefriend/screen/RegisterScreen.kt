@@ -7,5 +7,5 @@ import com.example.fridgefriend.viewmodel.CardDataViewModel
 
 @Composable
 fun RegisterScreen(navController: NavHostController) {
-
+    // TODO: 회원가입 화면/기능
 }

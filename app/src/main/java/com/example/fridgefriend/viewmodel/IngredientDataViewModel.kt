@@ -13,7 +13,7 @@ class IngredientDataViewModel(): ViewModel() {
             1,
             "NameOfIngredient1",
             true,
-            "20240524"
+            "00000000"
         )
         ingredientList.add(IngredientDataSample1)
 
@@ -21,7 +21,7 @@ class IngredientDataViewModel(): ViewModel() {
             2,
             "NameOfIngredient2",
             false,
-            "20240525"
+            "00000000"
         )
         ingredientList.add(IngredientDataSample2)
 
@@ -29,7 +29,7 @@ class IngredientDataViewModel(): ViewModel() {
             3,
             "NameOfIngredient3",
             false,
-            "20240526"
+            "00000000"
         )
         ingredientList.add(IngredientDataSample3)
 
@@ -37,7 +37,7 @@ class IngredientDataViewModel(): ViewModel() {
             4,
             "NameOfIngredient4",
             false,
-            "20240527"
+            "00000000"
         )
         ingredientList.add(IngredientDataSample4)
     }
@@ -48,7 +48,7 @@ class IngredientDataViewModel(): ViewModel() {
     }
 
     // 유통기한 변경
-    fun changeExpireDate(index:Int) {
-        ingredientList[index] = ingredientList[index].copy(expireDate = ingredientList[index].expireDate)
+    fun changeExpireDate(index:Int, expireDate:String) {
+        ingredientList[index] = ingredientList[index].copy(expireDate = expireDate)
     }
 }

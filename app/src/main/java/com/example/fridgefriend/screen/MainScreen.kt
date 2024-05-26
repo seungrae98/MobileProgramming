@@ -35,14 +35,14 @@ val LocalNavGraphViewModelStoreOwner =
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavHostController) {
+fun MainScreen(navController: NavHostController, ) {
     val navStoreOwner = rememberViewModelStoreOwner()
 
     CompositionLocalProvider(
         LocalNavGraphViewModelStoreOwner provides navStoreOwner
     ) {
 
-        val navViewModel: UserDataViewModel =
+        val userDataViewModel: UserDataViewModel =
             viewModel(viewModelStoreOwner = LocalNavGraphViewModelStoreOwner.current)
 
         Scaffold(
@@ -52,7 +52,7 @@ fun MainScreen(navController: NavHostController) {
                 )
             },
             bottomBar = {
-                if (navViewModel.loginStatus.value)
+                if (userDataViewModel.loginStatus.value)
                     BottomNavigationBar(navController)
             }
         ) { contentPadding ->
