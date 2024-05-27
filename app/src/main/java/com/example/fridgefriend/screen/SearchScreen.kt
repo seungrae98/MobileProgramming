@@ -35,6 +35,15 @@ fun SearchScreen(navController: NavHostController,
         }
     }
 
+    // 해당 유저의 메모 목록을 메뉴 목록(viewmodel)에 적용
+    repeat(cardDataViewModel.cardList.size) {
+        repeat(userDataViewModel.userList[userIndex].memo.size) { con ->
+            if (cardDataViewModel.cardList[it].cardID == userDataViewModel.userList[userIndex].memo.keys.elementAt(con)) {
+                cardDataViewModel.changeMemo(it, userDataViewModel.userList[userIndex].memo.values.elementAt(con))
+            }
+        }
+    }
+
     // 현재는 모든 메뉴 출력 수행
     // TODO: 검색 기능 (메뉴 이름 검색 / 보유 재료 검색), 출력 방법(카드 형식, 리스트 형식), 좋아요만 보기 기능 등
     Column(modifier = Modifier
@@ -47,42 +56,47 @@ fun SearchScreen(navController: NavHostController,
         Text(
             text = userDataViewModel.userList[userIndex].name,
             style = MaterialTheme.typography.bodyLarge,
-            fontSize = 30.sp
+            fontSize = 20.sp
         )
         Text(
             text = userDataViewModel.userList[userIndex].favourite.joinToString(),
             style = MaterialTheme.typography.bodyLarge,
-            fontSize = 30.sp
+            fontSize = 20.sp
         )
         Text(
             text = "",
-            fontSize = 30.sp
+            fontSize = 20.sp
         )
 
         repeat(cardDataViewModel.cardList.size) {
             Text(
                 text = cardDataViewModel.cardList[it].name,
                 style = MaterialTheme.typography.bodyLarge,
-                fontSize = 30.sp
+                fontSize = 20.sp
             )
             Text(
                 text = cardDataViewModel.cardList[it].mainIngredient.joinToString(),
                 style = MaterialTheme.typography.bodyLarge,
-                fontSize = 30.sp
+                fontSize = 20.sp
+            )
+            Text(
+                text = cardDataViewModel.cardList[it].memo,
+                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 20.sp
             )
             Text(
                 text = cardDataViewModel.cardList[it].recipeLink.joinToString(),
                 style = MaterialTheme.typography.bodyLarge,
-                fontSize = 30.sp
+                fontSize = 20.sp
             )
             Text(
                 text = cardDataViewModel.cardList[it].like.toString(),
                 style = MaterialTheme.typography.bodyLarge,
-                fontSize = 30.sp
+                fontSize = 20.sp
             )
             Text(
                 text = "",
-                fontSize = 30.sp
+                fontSize = 20.sp
             )
 
         }

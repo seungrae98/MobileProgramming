@@ -13,7 +13,7 @@ class CardDataViewModel(): ViewModel() {
             1,
             "NameOfFood1",
             listOf<String>("chicken", "garlic"),
-            "1",
+            "empty memo",
             listOf<String>("http://www.example1.com")
         )
         cardList.add(cardDataSample1)
@@ -22,7 +22,7 @@ class CardDataViewModel(): ViewModel() {
             2,
             "NameOfFood2",
             listOf<String>("pork"),
-            "2",
+            "empty memo",
             listOf<String>("http://www.example2.com")
         )
         cardList.add(cardDataSample2)
@@ -31,7 +31,7 @@ class CardDataViewModel(): ViewModel() {
             3,
             "NameOfFood3",
             listOf<String>("milk", "egg"),
-            "3",
+            "empty memo",
             listOf<String>("http://www.example3.com")
         )
         cardList.add(cardDataSample3)
@@ -40,7 +40,7 @@ class CardDataViewModel(): ViewModel() {
             4,
             "NameOfFood4",
             listOf<String>("milk", "egg"),
-            "4",
+            "empty memo",
             listOf<String>("http://www.example3.com")
         )
         cardList.add(cardDataSample4)
@@ -49,15 +49,15 @@ class CardDataViewModel(): ViewModel() {
             5,
             "NameOfFood5",
             listOf<String>("milk", "egg"),
-            "5",
+            "empty memo",
             listOf<String>("http://www.example3.com")
         )
         cardList.add(cardDataSample5)
     }
 
     // 메모 저장하면 메모 변경
-    fun changeMemo(index:Int) {
-        cardList[index] = cardList[index].copy(memo = cardList[index].memo)
+    fun changeMemo(index:Int, memo:String) {
+        cardList[index] = cardList[index].copy(memo = memo)
     }
 
     // 카드 누르면 좋아요 상태 변경

@@ -50,37 +50,37 @@ fun FridgeScreen(navController: NavHostController,
         Text(
             text = userDataViewModel.userList[userIndex].name,
             style = MaterialTheme.typography.bodyLarge,
-            fontSize = 30.sp
+            fontSize = 20.sp
         )
         Text(
             text = userDataViewModel.userList[userIndex].contain.keys.joinToString(),
             style = MaterialTheme.typography.bodyLarge,
-            fontSize = 30.sp
+            fontSize = 20.sp
         )
         Text(
             text = "",
-            fontSize = 30.sp
+            fontSize = 20.sp
         )
 
         repeat(ingredientDataViewModel.ingredientList.size) {
             Text(
                 text = ingredientDataViewModel.ingredientList[it].name,
                 style = MaterialTheme.typography.bodyLarge,
-                fontSize = 30.sp
+                fontSize = 20.sp
             )
             Text(
                 text = ingredientDataViewModel.ingredientList[it].contain.toString(),
                 style = MaterialTheme.typography.bodyLarge,
-                fontSize = 30.sp
+                fontSize = 20.sp
             )
             Text(
                 text = ingredientDataViewModel.ingredientList[it].expireDate,
                 style = MaterialTheme.typography.bodyLarge,
-                fontSize = 30.sp
+                fontSize = 20.sp
             )
             Text(
                 text = "",
-                fontSize = 30.sp
+                fontSize = 20.sp
             )
 
         }

@@ -33,6 +33,15 @@ fun FavouriteScreen(navController: NavHostController,
         }
     }
 
+    // 해당 유저의 메모 목록을 메뉴 목록(viewmodel)에 적용
+    repeat(cardDataViewModel.cardList.size) {
+        repeat(userDataViewModel.userList[userIndex].memo.size) { con ->
+            if (cardDataViewModel.cardList[it].cardID == userDataViewModel.userList[userIndex].memo.keys.elementAt(con)) {
+                cardDataViewModel.changeMemo(it, userDataViewModel.userList[userIndex].memo.values.elementAt(con))
+            }
+        }
+    }
+
     Column(modifier = Modifier
         .fillMaxSize()
         .verticalScroll(scrollState),
@@ -43,16 +52,16 @@ fun FavouriteScreen(navController: NavHostController,
         Text(
             text = userDataViewModel.userList[userIndex].name,
             style = MaterialTheme.typography.bodyLarge,
-            fontSize = 30.sp
+            fontSize = 20.sp
         )
         Text(
             text = userDataViewModel.userList[userIndex].favourite.joinToString(),
             style = MaterialTheme.typography.bodyLarge,
-            fontSize = 30.sp
+            fontSize = 20.sp
         )
         Text(
             text = "",
-            fontSize = 30.sp
+            fontSize = 20.sp
         )
 
         repeat(cardDataViewModel.cardList.size) {
@@ -60,26 +69,31 @@ fun FavouriteScreen(navController: NavHostController,
                 Text(
                     text = cardDataViewModel.cardList[it].name,
                     style = MaterialTheme.typography.bodyLarge,
-                    fontSize = 30.sp
+                    fontSize = 20.sp
                 )
                 Text(
                     text = cardDataViewModel.cardList[it].mainIngredient.joinToString(),
                     style = MaterialTheme.typography.bodyLarge,
-                    fontSize = 30.sp
+                    fontSize = 20.sp
+                )
+                Text(
+                    text = cardDataViewModel.cardList[it].memo,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 20.sp
                 )
                 Text(
                     text = cardDataViewModel.cardList[it].recipeLink.joinToString(),
                     style = MaterialTheme.typography.bodyLarge,
-                    fontSize = 30.sp
+                    fontSize = 20.sp
                 )
                 Text(
                     text = cardDataViewModel.cardList[it].like.toString(),
                     style = MaterialTheme.typography.bodyLarge,
-                    fontSize = 30.sp
+                    fontSize = 20.sp
                 )
                 Text(
                     text = "",
-                    fontSize = 30.sp
+                    fontSize = 20.sp
                 )
             }
         }
