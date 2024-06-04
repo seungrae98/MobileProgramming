@@ -43,7 +43,7 @@ fun LogInScreen(navController: NavHostController,
         mutableStateOf("")
     }
 
-    var showError by remember {
+    var loginError by remember {
         mutableStateOf(false)
     }
 
@@ -54,7 +54,7 @@ fun LogInScreen(navController: NavHostController,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
 
-        if (showError) {
+        if (loginError) {
             Text(
                 text = "아이디 혹은 비밀번호를 정확히 입력해주세요.",
                 color = Color.Red,
@@ -90,7 +90,7 @@ fun LogInScreen(navController: NavHostController,
                     launchSingleTop = true
                 }
             } else {
-                showError = true
+                loginError = true
             }
         },
             modifier = Modifier
