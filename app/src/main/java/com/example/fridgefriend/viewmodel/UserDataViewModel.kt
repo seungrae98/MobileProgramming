@@ -48,4 +48,15 @@ class UserDataViewModel : ViewModel(){
     }
 
     //UserListAdd 함수 만들기, 함수 호출해서 회원가입하면 이거로 새 뷰모델에 데이터 추가되게
+    fun addUser(id: String, pw: String, name: String) {
+        val newUser = UserData(
+            id = id,
+            pw = pw,
+            name = name,
+            favourite = mutableListOf(),
+            memo = mutableMapOf(),
+            contain = mutableMapOf()
+        )
+        userList.add(newUser)
+    }
 }
