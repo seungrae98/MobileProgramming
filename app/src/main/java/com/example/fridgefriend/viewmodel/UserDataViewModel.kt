@@ -46,4 +46,6 @@ class UserDataViewModel : ViewModel(){
         }
         return false
     }
+
+    //UserListAdd 함수 만들기, 함수 호출해서 회원가입하면 이거로 새 뷰모델에 데이터 추가되게
 }
