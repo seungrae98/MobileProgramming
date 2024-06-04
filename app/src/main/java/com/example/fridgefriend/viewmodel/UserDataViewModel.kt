@@ -47,6 +47,11 @@ class UserDataViewModel : ViewModel(){
         return false
     }
 
+    fun isUserIdExists(id: String): Boolean {
+        // 유저 id 중복 체크
+        return userList.any { it.id == id }
+    }
+
     //UserListAdd 함수 만들기, 함수 호출해서 회원가입하면 이거로 새 뷰모델에 데이터 추가되게
     fun addUser(id: String, pw: String, name: String) {
         val newUser = UserData(

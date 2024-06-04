@@ -48,6 +48,10 @@ fun RegisterScreen(navController: NavHostController,
                 errorMsg = "모든 내용을 입력해주세요"
                 false
             }
+            userDataViewModel.isUserIdExists(userID) -> {
+                errorMsg = "이미 존재하는 아이디입니다"
+                false
+            }
             !Regex("^[a-zA-Z0-9]{3,10}\$").matches(userID) -> {
                 errorMsg = "아이디는 3~10자 이내의 영문 대소문자, 숫자만 사용 가능합니다"
                 false
