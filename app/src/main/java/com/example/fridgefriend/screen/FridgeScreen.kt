@@ -228,6 +228,7 @@ fun IngredientCheckDialog(
 
 
 @Composable
+//재료 체크창
 fun CategoryCheckSection(
     title: String,
     ids: List<Int>,

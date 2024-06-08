@@ -64,4 +64,18 @@ class UserDataViewModel : ViewModel(){
         )
         userList.add(newUser)
     }
+
+    // 유저의 contain에 새로운 재료의 유통기한 추가
+    fun addExpireDateToContain(userIndex: Int, ingredientId: Int, expireDate: String) {
+        if (userIndex >= 0 && userIndex < userList.size) {
+            userList[userIndex].contain[ingredientId] = expireDate
+        }
+    }
+
+    // 유저의 contain에서 기존 재료의 유통기한 제거
+    fun removeExpireDateFromContain(userIndex: Int, ingredientId: Int) {
+        if (userIndex >= 0 && userIndex < userList.size) {
+            userList[userIndex].contain.remove(ingredientId)
+        }
+    }
 }
