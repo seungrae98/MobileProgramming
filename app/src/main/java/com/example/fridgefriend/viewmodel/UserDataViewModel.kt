@@ -11,7 +11,7 @@ class UserDataViewModel : ViewModel(){
         private set
 
     var userIndex = mutableIntStateOf(0)
-    var loginStatus = mutableStateOf( false )
+    var loginStatus = mutableStateOf( false)
 
     init {
         // 예시로 하드코딩 했지만, DB에서 받아오는 방법도 있음
