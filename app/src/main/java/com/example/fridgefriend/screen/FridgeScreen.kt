@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,6 +44,9 @@ import androidx.navigation.NavHostController
 import com.example.fridgefriend.viewmodel.CardDataViewModel
 import com.example.fridgefriend.viewmodel.IngredientDataViewModel
 import com.example.fridgefriend.viewmodel.UserDataViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 @Composable
 fun FridgeScreen(
@@ -75,7 +79,7 @@ fun FridgeScreen(
         ) {
             Text(
                 text = "내 냉장고",
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.headlineMedium,
                 fontSize = 28.sp
             )
             IconButton(
@@ -156,7 +160,7 @@ fun CategoryButton(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(text = it.name)
-                            Text(text = user?.contain?.get(it.id) ?: "유통기한 정보 없음", fontSize = 14.sp)
+                            Text(text = user?.contain?.get(it.id.toString()) ?: "유통기한 정보 없음", fontSize = 14.sp)
                         }
                     }
                 }
@@ -253,8 +257,8 @@ fun CategoryCheckSection(
                 ids.forEach { id ->
                     val ingredient = ingredientDataViewModel.ingredientList.getOrNull(id - 1)
                     ingredient?.let {
-                        val isChecked = checkedState.getOrPut(it.id-1) { it.contain }
-                        val showExpireDateDialog = dialogState.getOrPut(it.id-1) { false }
+                        val isChecked = checkedState.getOrPut(it.id - 1) { it.contain }
+                        val showExpireDateDialog = dialogState.getOrPut(it.id - 1) { false }
 
                         Row(
                             modifier = Modifier
@@ -268,10 +272,11 @@ fun CategoryCheckSection(
                                     checked = isChecked,
                                     onCheckedChange = { checked ->
                                         if (checked) {
-                                            dialogState[it.id-1] = true
+                                            dialogState[it.id - 1] = true
                                         } else {
-                                            userDataViewModel.removeExpireDateFromContain(it.id-1, userIndex)
-                                            checkedState[it.id-1] = false
+                                            userDataViewModel.removeExpireDateFromContain(userIndex, it.id)
+                                            checkedState[it.id - 1] = false
+                                            ingredientDataViewModel.changeContain(it.id - 1)
                                         }
                                     }
                                 )
@@ -281,11 +286,13 @@ fun CategoryCheckSection(
 
                         if (showExpireDateDialog) {
                             ExpireDateDialog(
-                                onDismissRequest = { dialogState[it.id-1] = false },
+                                onDismissRequest = { dialogState[it.id - 1] = false },
                                 onExpireDateConfirm = { expireDate ->
-                                    userDataViewModel.addExpireDateToContain(it.id-1, userIndex, expireDate)
-                                    checkedState[it.id-1] = true
-                                    dialogState[it.id-1] = false
+                                    userDataViewModel.addExpireDateToContain(userIndex, it.id, expireDate)
+                                    checkedState[it.id - 1] = true
+                                    dialogState[it.id - 1] = false
+                                    ingredientDataViewModel.changeContain(it.id - 1)
+                                    ingredientDataViewModel.changeExpireDate(it.id - 1, expireDate)
                                 }
                             )
                         }
@@ -302,6 +309,27 @@ fun ExpireDateDialog(
     onExpireDateConfirm: (String) -> Unit
 ) {
     var expireDate by remember { mutableStateOf("") }
+    var isValid by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+    val currentDate = LocalDate.now()
+
+    fun validateDate(date: String): Boolean {
+        return try {
+            val parsedDate = LocalDate.parse(date, formatter)
+            if (parsedDate >= currentDate) {
+                errorMessage = ""
+                true
+            } else {
+                errorMessage = "현재 날짜 이후여야 합니다."
+                false
+            }
+        } catch (e: DateTimeParseException) {
+            errorMessage = "유효한 날짜 형식이 아닙니다."
+            false
+        }
+    }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -309,25 +337,41 @@ fun ExpireDateDialog(
             Text(text = "유통기한 입력")
         },
         text = {
-            TextField(
-                value = expireDate,
-                onValueChange = { expireDate = it },
-                label = { Text("유통기한") },
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-            )
+            Column {
+                TextField(
+                    value = expireDate,
+                    onValueChange = {
+                        expireDate = it
+                        isValid = it.length == 8 && it.all { char -> char.isDigit() } && validateDate(it)
+                    },
+                    label = { Text("유통기한 (8자리 숫자, yyyyMMdd)") },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                )
+                if (!isValid) {
+                    Text(
+                        text = errorMessage,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
         },
         confirmButton = {
-            TextButton(onClick = {
-                if (expireDate.isNotBlank()) {
-                    onExpireDateConfirm(expireDate)
-                }
-                onDismissRequest()
-            }) {
+            TextButton(
+                onClick = {
+                    if (isValid && expireDate.isNotBlank()) {
+                        onExpireDateConfirm(expireDate)
+                    }
+                    onDismissRequest()
+                },
+                enabled = isValid
+            ) {
                 Text("확인")
             }
         }
     )
 }
+
 
 
 /*

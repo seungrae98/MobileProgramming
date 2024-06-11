@@ -26,16 +26,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fridgefriend.navigation.Routes
-import com.example.fridgefriend.viewmodel.CardDataViewModel
 import com.example.fridgefriend.viewmodel.UserDataViewModel
+import com.example.fridgefriend.models.UserData
 
 @Composable
-fun RegisterScreen(navController: NavHostController,
-                   userDataViewModel: UserDataViewModel) {
-    // TODO: 회원가입 화면/기능
+fun RegisterScreen(navController: NavHostController, userDataViewModel: UserDataViewModel) {
     var userID by remember { mutableStateOf("") }
     var userPw by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }
@@ -104,6 +101,7 @@ fun RegisterScreen(navController: NavHostController,
             value = userPw,
             onValueChange = { userPw = it },
             label = { Text("비밀번호(4~20자 영문, 숫자, 특수문자)") },
+            visualTransformation = PasswordVisualTransformation()
         )
 
         OutlinedTextField(
@@ -119,11 +117,16 @@ fun RegisterScreen(navController: NavHostController,
         Button(
             onClick = {
                 if (validateInput()) {
-                    userDataViewModel.addUser(userID, userPw, userName)
-                    navController.navigate(Routes.Login.route) {
-                        popUpTo(Routes.Register.route) {
-                            inclusive = true
+                    val newUser = UserData(id = userID, pw = userPw, name = userName, favourite = mutableListOf(), memo = mutableMapOf(), contain = mutableMapOf())
+                    if (userDataViewModel.addUser(newUser)) {
+                        navController.navigate(Routes.Login.route) {
+                            popUpTo(Routes.Register.route) {
+                                inclusive = true
+                            }
                         }
+                    } else {
+                        regiError = true
+                        errorMsg = "회원가입 실패: 이미 존재하는 아이디입니다"
                     }
                 } else {
                     regiError = true

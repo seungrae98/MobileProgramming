@@ -45,14 +45,15 @@ fun SearchScreen(navController: NavHostController,
     }
 
     // 해당 유저의 재료 목록을 재료 목록(viewmodel)에 적용
-    repeat(ingredientDataViewModel.ingredientList.size) {
+    //오류나서 일단 주석처리
+    /*repeat(ingredientDataViewModel.ingredientList.size) {
         repeat(userDataViewModel.userList[userIndex].contain.size) { con ->
             if (ingredientDataViewModel.ingredientList[it].id == userDataViewModel.userList[userIndex].contain.keys.elementAt(con)) {
                 ingredientDataViewModel.ingredientList[it].contain = true
                 ingredientDataViewModel.changeExpireDate(it, userDataViewModel.userList[userIndex].contain.values.elementAt(con))
             }
         }
-    }
+    }*/
 
     // 현재는 모든 메뉴 출력 수행
     // TODO: 검색 기능 (메뉴 이름 검색 / 보유 재료 검색), 출력 방법(카드 형식, 리스트 형식), 좋아요만 보기 기능 등

@@ -1,5 +1,8 @@
 package com.example.fridgefriend.models
 
+import androidx.room.Entity
+
+@Entity(tableName = "carddata")
 data class CardData(
     var cardID: Int = 0,
     var name: String = "",

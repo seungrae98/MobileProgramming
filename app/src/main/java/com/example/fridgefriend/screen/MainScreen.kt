@@ -60,7 +60,7 @@ fun MainScreen(navController: NavHostController) {
             Column(modifier = Modifier.padding(contentPadding)) {
                 NavHost(
                     navController = navController,
-                    startDestination = Routes.Login.route
+                    startDestination = if (userDataViewModel.loginStatus.value) Routes.Home.route else Routes.Login.route
                 ) {
                     composable(route = Routes.Login.route) {
                         LogInScreen(navController, userDataViewModel)
