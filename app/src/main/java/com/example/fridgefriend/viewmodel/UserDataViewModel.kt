@@ -1,5 +1,139 @@
 package com.example.fridgefriend.viewmodel
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.*
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import com.example.fridgefriend.models.UserData
+
+class UserDataViewModel : ViewModel() {
+
+    private val db = FirebaseDatabase.getInstance().getReference("users")
+    val userList = mutableStateListOf<UserData>()
+    var userIndex = mutableStateOf(0)
+    var loginStatus = mutableStateOf(false)  // 로그인 상태
+
+    init {
+        // Realtime Database에서 데이터를 불러옴
+        db.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                userList.clear()
+                for (userSnapshot in snapshot.children) {
+                    val user = userSnapshot.getValue(UserData::class.java)
+                    user?.let { userList.add(it) }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+            }
+        })
+    }
+
+    fun addExpireDateToContain(userIndex: Int, ingredientId: Int, expireDate: String) {
+        userList[userIndex].contain[ingredientId] = expireDate
+        saveUserDataToDatabase(userIndex)
+    }
+
+    fun removeExpireDateFromContain(userIndex: Int, ingredientId: Int) {
+        userList[userIndex].contain.remove(ingredientId)
+        saveUserDataToDatabase(userIndex)
+    }
+
+    private fun saveUserDataToDatabase(userIndex: Int) {
+        val user = userList[userIndex]
+        db.child(user.id).setValue(user)
+    }
+
+    // checkInfo 함수: 입력받은 id와 pw를 가진 유저가 있는지 확인
+    fun checkInfo(id: String, pw: String): Boolean {
+        val user = userList.find { it.id == id && it.pw == pw }
+        return if (user != null) {
+            userIndex.value = userList.indexOf(user)
+            true
+        } else {
+            false
+        }
+    }
+
+    // 중복 id인 유저가 이미 있는지 확인하는 함수
+    fun isUserIdExists(id: String): Boolean {
+        return userList.any { it.id == id }
+    }
+
+    // 회원가입 시 새로운 유저 데이터를 추가하는 함수
+    fun addUser(id: String, pw: String, name: String) {
+        val newUser = UserData(
+            id = id,
+            pw = pw,
+            name = name,
+            favourite = mutableListOf(),
+            memo = mutableMapOf(),
+            contain = mutableMapOf()
+        )
+        userList.add(newUser)
+    }
+}
+
+
+
+/*
+package com.example.fridgefriend.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.*
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import com.example.fridgefriend.models.UserData
+
+class UserDataViewModel : ViewModel() {
+
+    private val db = FirebaseDatabase.getInstance().getReference("users")
+    val userList = mutableStateListOf<UserData>()
+    var userIndex = mutableStateOf(0)
+
+    init {
+        // Realtime Database에서 데이터를 불러옴
+        db.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                userList.clear()
+                for (userSnapshot in snapshot.children) {
+                    val user = userSnapshot.getValue(UserData::class.java)
+                    user?.let { userList.add(it) }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+            }
+        })
+    }
+
+    fun addExpireDateToContain(userIndex: Int, ingredientId: Int, expireDate: String) {
+        userList[userIndex].contain[ingredientId] = expireDate
+        saveUserDataToDatabase(userIndex)
+    }
+
+    fun removeExpireDateFromContain(userIndex: Int, ingredientId: Int) {
+        userList[userIndex].contain.remove(ingredientId)
+        saveUserDataToDatabase(userIndex)
+    }
+
+    private fun saveUserDataToDatabase(userIndex: Int) {
+        val user = userList[userIndex]
+        db.child(user.id).setValue(user)
+    }
+}
+
+
+*/
+/*
+package com.example.fridgefriend.viewmodel
+
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -78,4 +212,5 @@ class UserDataViewModel : ViewModel(){
             userList[userIndex].contain.remove(ingredientId)
         }
     }
-}
+}*/
+

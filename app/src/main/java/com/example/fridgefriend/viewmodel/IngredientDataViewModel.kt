@@ -1,5 +1,86 @@
 package com.example.fridgefriend.viewmodel
 
+import androidx.lifecycle.ViewModel
+import com.example.fridgefriend.models.Ingredient
+
+class IngredientDataViewModel : ViewModel() {
+    var ingredientList = listOf(
+        Ingredient(1, "소고기", false, null),
+        Ingredient(2, "차돌박이", false, null),
+        Ingredient(3, "우삼겹", false, null),
+        Ingredient(4, "돼지고기 앞다리살", false, null),
+        Ingredient(5, "삼겹살", false, null),
+        Ingredient(6, "대패삼겹살", false, null),
+        Ingredient(7, "쭈꾸미", false, null),
+        Ingredient(8, "닭고기", false, null),
+        Ingredient(9, "닭가슴살", false, null),
+        Ingredient(10, "부추", false, null),
+        Ingredient(11, "콩나물", false, null),
+        Ingredient(12, "대파", false, null),
+        Ingredient(13, "양파", false, null),
+        Ingredient(14, "감자", false, null),
+        Ingredient(15, "청경채", false, null),
+        Ingredient(16, "쪽파", false, null),
+        Ingredient(17, "오이", false, null),
+        Ingredient(18, "브로콜리", false, null),
+        Ingredient(19, "파슬리", false, null),
+        Ingredient(20, "애호박", false, null),
+        Ingredient(21, "청양고추", false, null),
+        Ingredient(22, "무", false, null),
+        Ingredient(23, "당근", false, null),
+        Ingredient(24, "마늘", false, null),
+        Ingredient(25, "토마토", false, null),
+        Ingredient(26, "숙주", false, null),
+        Ingredient(27, "피망", false, null),
+        Ingredient(28, "팽이버섯", false, null),
+        Ingredient(29, "고추", false, null),
+        Ingredient(30, "파프리카", false, null),
+        Ingredient(31, "양배추", false, null),
+        Ingredient(32, "새우", false, null),
+        Ingredient(33, "명란젓", false, null),
+        Ingredient(34, "오징어", false, null),
+        Ingredient(35, "고등어", false, null),
+        Ingredient(36, "연어", false, null),
+        Ingredient(37, "미역", false, null),
+        Ingredient(38, "달걀", false, null),
+        Ingredient(39, "메추리알", false, null),
+        Ingredient(40, "우유", false, null),
+        Ingredient(41, "파마산치즈", false, null),
+        Ingredient(42, "체다치즈", false, null),
+        Ingredient(43, "모짜렐라치즈", false, null),
+        Ingredient(44, "참치캔", false, null),
+        Ingredient(45, "두부", false, null),
+        Ingredient(46, "김", false, null),
+        Ingredient(47, "스팸", false, null),
+        Ingredient(48, "베이컨", false, null),
+        Ingredient(49, "떡볶이 떡", false, null),
+        Ingredient(50, "옥수수통조림", false, null),
+        Ingredient(51, "식빵", false, null),
+        Ingredient(52, "어묵", false, null)
+    )
+
+    // contain 값을 변경하는 함수
+    fun changeContain(index: Int) {
+        val ingredient = ingredientList.getOrNull(index)
+        ingredient?.let {
+            it.contain = !it.contain
+        }
+    }
+
+    // expireDate 값을 변경하는 함수
+    fun changeExpireDate(index: Int, expireDate: String) {
+        val ingredient = ingredientList.getOrNull(index)
+        ingredient?.let {
+            it.expireDate = expireDate
+        }
+    }
+}
+
+
+
+/*
+package com.example.fridgefriend.viewmodel
+
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 
@@ -436,4 +517,4 @@ class IngredientDataViewModel(): ViewModel() {
     fun changeExpireDate(index:Int, expireDate:String) {
         ingredientList[index] = ingredientList[index].copy(expireDate = expireDate)
     }
-}
+}*/

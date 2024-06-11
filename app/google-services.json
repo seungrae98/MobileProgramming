@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "44097380562",
+    "project_id": "fridgefriend-8fd2b",
+    "storage_bucket": "fridgefriend-8fd2b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:44097380562:android:13bbb638d49e3c420d4d0b",
+        "android_client_info": {
+          "package_name": "com.example.fridgefriend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBu0WKNgvCS4JTkOfSsnxncEhv-OkMme6g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
