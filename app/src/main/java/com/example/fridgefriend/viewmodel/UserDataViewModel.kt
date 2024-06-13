@@ -13,28 +13,11 @@ import com.google.firebase.ktx.Firebase
 
 class UserDataViewModel : ViewModel() {
 
-    private val db = FirebaseDatabase.getInstance().getReference("users")
-    val userList = mutableStateListOf<UserData>()
+    private val db = FirebaseDatabase.getInstance().getReference("userdata")
+    var userList = mutableStateListOf<UserData>()
     var userIndex = mutableStateOf(0)
     var loginStatus = mutableStateOf(false)  // 로그인 상태
     var checkInfoMessage = mutableStateOf("")
-
-    init {
-        // Realtime Database에서 데이터를 불러옴
-        db.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                userList.clear()
-                for (userSnapshot in snapshot.children) {
-                    val user = userSnapshot.getValue(UserData::class.java)
-                    user?.let { userList.add(it) }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Failed to read value
-            }
-        })
-    }
 
     fun addExpireDateToContain(userIndex: Int, ingredientId: Int, expireDate: String) {
         val user = userList[userIndex]
@@ -53,39 +36,6 @@ class UserDataViewModel : ViewModel() {
         db.child(user.id).setValue(user)
     }
 
-    // 로그인 기능
-    fun login(id: String, pw: String): Boolean {
-        val user = userList.find { it.id == id && it.pw == pw }
-        return if (user != null) {
-            userIndex.value = userList.indexOf(user)
-            loginStatus.value = true
-            checkInfoMessage.value = "로그인 성공"
-            true
-        } else {
-            checkInfoMessage.value = "로그인 실패: 아이디 또는 비밀번호가 일치하지 않습니다."
-            false
-        }
-    }
-
-    // 로그아웃 기능
-    fun logout() {
-        loginStatus.value = false
-        checkInfoMessage.value = "로그아웃 되었습니다."
-    }
-
-    // 회원가입 기능
-    fun signUp(newUser: UserData): Boolean {
-        val exists = userList.any { it.id == newUser.id }
-        return if (!exists) {
-            userList.add(newUser)
-            db.child(newUser.id).setValue(newUser)
-            checkInfoMessage.value = "회원가입 성공"
-            true
-        } else {
-            checkInfoMessage.value = "회원가입 실패: 이미 존재하는 아이디입니다."
-            false
-        }
-    }
 
     // checkInfo 함수: 입력받은 id와 pw를 가진 유저가 있는지 확인
     fun checkInfo(id: String, pw: String): Boolean {
@@ -103,19 +53,13 @@ class UserDataViewModel : ViewModel() {
         return userList.any { it.id == id }
     }
 
-    // 회원가입 시 새로운 유저 데이터를 추가하는 함수
     fun addUser(newUser: UserData): Boolean {
         return if (!isUserIdExists(newUser.id)) {
             userList.add(newUser)
             db.child(newUser.id).setValue(newUser)
-                .addOnSuccessListener {
-                    Log.d("UserDataViewModel", "User data saved successfully.")
-                }
-                .addOnFailureListener { exception ->
-                    Log.e("UserDataViewModel", "Failed to save user data.", exception)
-                }
             true
         } else {
+            Log.d("UserDataViewModel", "User already exists: $newUser")
             false
         }
     }

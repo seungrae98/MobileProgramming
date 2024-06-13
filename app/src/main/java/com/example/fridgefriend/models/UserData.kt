@@ -3,7 +3,7 @@ package com.example.fridgefriend.models
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "usesdata")
+@Entity(tableName = "userdata")
 data class UserData(
     var id: String = "",
     var pw: String = "",
