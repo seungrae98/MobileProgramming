@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +31,7 @@ import androidx.navigation.NavHostController
 import com.example.fridgefriend.navigation.Routes
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 import com.example.fridgefriend.models.UserData
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(navController: NavHostController, userDataViewModel: UserDataViewModel) {
@@ -39,14 +41,12 @@ fun RegisterScreen(navController: NavHostController, userDataViewModel: UserData
     var regiError by remember { mutableStateOf(false) }
     var errorMsg by remember { mutableStateOf("") }
 
+    val coroutineScope = rememberCoroutineScope()
+
     fun validateInput(): Boolean {
         return when {
             userID.isEmpty() || userPw.isEmpty() || userName.isEmpty() -> {
                 errorMsg = "모든 내용을 입력해주세요"
-                false
-            }
-            userDataViewModel.isUserIdExists(userID) -> {
-                errorMsg = "이미 존재하는 아이디입니다"
                 false
             }
             !Regex("^[a-zA-Z0-9]{3,10}\$").matches(userID) -> {
@@ -101,7 +101,7 @@ fun RegisterScreen(navController: NavHostController, userDataViewModel: UserData
             value = userPw,
             onValueChange = { userPw = it },
             label = { Text("비밀번호(4~20자 영문, 숫자, 특수문자)") },
-            visualTransformation = PasswordVisualTransformation()
+            //visualTransformation = PasswordVisualTransformation()
         )
 
         OutlinedTextField(
@@ -117,16 +117,27 @@ fun RegisterScreen(navController: NavHostController, userDataViewModel: UserData
         Button(
             onClick = {
                 if (validateInput()) {
-                    val newUser = UserData(id = userID, pw = userPw, name = userName, favourite = mutableListOf(), memo = mutableMapOf(), contain = mutableMapOf())
-                    if (userDataViewModel.addUser(newUser)) {
-                        navController.navigate(Routes.Login.route) {
-                            popUpTo(Routes.Register.route) {
-                                inclusive = true
+                    coroutineScope.launch {
+                        val newUser = UserData(
+                            id = userID,
+                            pw = userPw,
+                            name = userName,
+                            favourite = mutableListOf(),
+                            memo = mutableMapOf(),
+                            contain = mutableMapOf()
+                        )
+                        userDataViewModel.addUser(newUser) { success ->
+                            if (success) {
+                                navController.navigate(Routes.Login.route) {
+                                    popUpTo(Routes.Register.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            } else {
+                                regiError = true
+                                errorMsg = "이미 존재하는 아이디입니다"
                             }
                         }
-                    } else {
-                        regiError = true
-                        errorMsg = "회원가입 실패: 이미 존재하는 아이디입니다"
                     }
                 } else {
                     regiError = true

@@ -2,6 +2,7 @@ package com.example.fridgefriend.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import com.example.fridgefriend.models.CardData
 
 class CardDataViewModel(): ViewModel() {
     var cardList = mutableStateListOf<CardData>()

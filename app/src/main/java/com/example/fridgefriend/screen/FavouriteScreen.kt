@@ -17,6 +17,7 @@ import androidx.navigation.NavHostController
 import com.example.fridgefriend.viewmodel.CardDataViewModel
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 
+
 @Composable
 fun FavouriteScreen(navController: NavHostController,
                     userDataViewModel: UserDataViewModel,
@@ -25,7 +26,7 @@ fun FavouriteScreen(navController: NavHostController,
     val scrollState = rememberScrollState()
     val userIndex = userDataViewModel.userIndex.value
 
-    // 해당 유저의 좋아요 목록을 메뉴 목록(viewmodel)에 적용
+    /*// 해당 유저의 좋아요 목록을 메뉴 목록(viewmodel)에 적용
     repeat(cardDataViewModel.cardList.size) {
         repeat(userDataViewModel.userList[userIndex].favourite.size) { fav ->
             if (cardDataViewModel.cardList[it].cardID == userDataViewModel.userList[userIndex].favourite[fav])
@@ -62,7 +63,7 @@ fun FavouriteScreen(navController: NavHostController,
         Text(
             text = "",
             fontSize = 20.sp
-        )
+        )*/
 
         repeat(cardDataViewModel.cardList.size) {
             if (cardDataViewModel.cardList[it].like) {
@@ -98,4 +99,4 @@ fun FavouriteScreen(navController: NavHostController,
             }
         }
     }
-}
+

@@ -1,8 +1,12 @@
 package com.example.fridgefriend.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.fridgefriend.models.Ingredient
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
+private val db = Firebase.database.getReference("userdata")
 class IngredientDataViewModel : ViewModel() {
     var ingredientList = listOf(
         Ingredient(1, "소고기", false, null),
@@ -58,22 +62,6 @@ class IngredientDataViewModel : ViewModel() {
         Ingredient(51, "식빵", false, null),
         Ingredient(52, "어묵", false, null)
     )
-
-    // contain 값을 변경하는 함수
-    fun changeContain(index: Int) {
-        val ingredient = ingredientList.getOrNull(index)
-        ingredient?.let {
-            it.contain = !it.contain
-        }
-    }
-
-    // expireDate 값을 변경하는 함수
-    fun changeExpireDate(index: Int, expireDate: String) {
-        val ingredient = ingredientList.getOrNull(index)
-        ingredient?.let {
-            it.expireDate = expireDate
-        }
-    }
 }
 
 
