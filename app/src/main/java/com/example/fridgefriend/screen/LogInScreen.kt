@@ -17,11 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.navigation.NavHostController
+import com.example.fridgefriend.database.UserDataDBViewModel
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 import com.example.fridgefriend.navigation.Routes
 
 @Composable
 fun LogInScreen(navController: NavHostController,
+                userDataDBViewModel: UserDataDBViewModel,
                 userDataViewModel: UserDataViewModel) {
 
     var userID by remember {

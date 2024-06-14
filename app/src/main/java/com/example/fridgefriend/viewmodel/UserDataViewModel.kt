@@ -4,6 +4,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.example.fridgefriend.database.UserDataDB
+import com.example.fridgefriend.database.UserDataDBViewModel
 
 class UserDataViewModel : ViewModel(){
 
@@ -19,21 +21,25 @@ class UserDataViewModel : ViewModel(){
             "id1",
             "1234",
             "user1",
-            mutableListOf<Int>(1, 2, 3),
-            mutableMapOf<Int, String>(1 to "memo for card1 from user1", 5 to "memo for card5 from user1"),
-            mutableMapOf<Int, String>(1 to "20240530", 2 to "20240531")
+            mutableListOf<Int>(101, 102, 103),
+            mutableMapOf<String, String>("101" to "memo for card1 from user1", "105" to "memo for card5 from user1"),
+            mutableMapOf<String, String>("201" to "20240530", "202" to "20240531")
         )
         userList.add(userDataSample1)
+    }
 
-        val userDataSample2 = UserData(
-            "id2",
-            "1234",
-            "user2",
-            mutableListOf<Int>(2, 5),
-            mutableMapOf<Int, String>(2 to "memo for card2 from user2", 3 to "memo for card3 from user2", 4 to "memo for card4 from user2"),
-            mutableMapOf<Int, String>(3 to "20240601", 4 to "20240602")
-        )
-        userList.add(userDataSample2)
+    fun getUserData(userList: List<UserDataDB>) {
+        userList.forEach {
+            val userSample = UserData(
+                id = it.id,
+                pw = it.pw,
+                name = it.name,
+                favourite = it.favourite.toMutableList(),
+                memo = it.memo.toMutableMap(),
+                contain = it.contain.toMutableMap()
+            )
+            this.userList.add(userSample)
+        }
     }
 
     fun checkInfo(id:String, pw:String): Boolean{
@@ -47,7 +53,28 @@ class UserDataViewModel : ViewModel(){
         return false
     }
 
-    fun changePw(index: Int, newPw: String) {
+    fun addUserData(userDataDBViewModel: UserDataDBViewModel, userData: UserData) {
+        val userSample = UserDataDB(
+            id = userData.id,
+            pw = userData.pw,
+            name = userData.name,
+            favourite = userData.favourite.toList(),
+            memo = userData.memo.toMap(),
+            contain = userData.contain.toMap(),
+        )
+        userDataDBViewModel.insertItem(userSample)
+    }
+
+    fun changePw(userDataDBViewModel: UserDataDBViewModel, index: Int, newPw: String) {
         userList[index] = userList[index].copy(pw = newPw)
+        val userSample = UserDataDB(
+            id = userList[index].id,
+            pw = userList[index].pw,
+            name = userList[index].name,
+            favourite = userList[index].favourite.toList(),
+            memo = userList[index].memo.toMap(),
+            contain = userList[index].contain.toMap(),
+        )
+        userDataDBViewModel.updateItem(userSample)
     }
 }

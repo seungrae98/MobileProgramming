@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.example.fridgefriend.database.UserDataDBViewModel
 import com.example.fridgefriend.screen.FavouriteScreen
 import com.example.fridgefriend.screen.FridgeScreen
 import com.example.fridgefriend.screen.SearchScreen
@@ -14,6 +15,7 @@ import com.example.fridgefriend.screen.WebViewScreen
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 
 fun NavGraphBuilder.mainNavGraph(navController: NavHostController,
+                                 userDataDBViewModel: UserDataDBViewModel,
                                  userDataViewModel: UserDataViewModel){
 
     navigation(startDestination = "Fridge", route="Home"){
@@ -23,15 +25,15 @@ fun NavGraphBuilder.mainNavGraph(navController: NavHostController,
         }
 
         composable(route = Routes.Search.route) {
-            SearchScreen(navController, userDataViewModel)
+            SearchScreen(navController, userDataDBViewModel, userDataViewModel)
         }
 
         composable(route = Routes.Favourite.route) {
-            FavouriteScreen(navController, userDataViewModel)
+            FavouriteScreen(navController, userDataDBViewModel, userDataViewModel)
         }
 
         composable(route = Routes.Settings.route) {
-            SettingsScreen(navController, userDataViewModel)
+            SettingsScreen(navController, userDataDBViewModel, userDataViewModel)
         }
 
         composable(

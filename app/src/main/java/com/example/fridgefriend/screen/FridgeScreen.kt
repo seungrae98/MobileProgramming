@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -31,7 +32,7 @@ fun FridgeScreen(navController: NavHostController,
     // 해당 유저의 재료 목록을 재료 목록(viewmodel)에 적용
     repeat(ingredientDataViewModel.ingredientList.size) {
         repeat(userDataViewModel.userList[userIndex].contain.size) { con ->
-            if (ingredientDataViewModel.ingredientList[it].id == userDataViewModel.userList[userIndex].contain.keys.elementAt(con)) {
+            if (ingredientDataViewModel.ingredientList[it].id == userDataViewModel.userList[userIndex].contain.keys.elementAt(con).toInt()) {
                 ingredientDataViewModel.ingredientList[it].contain = true
                 ingredientDataViewModel.changeExpireDate(it, userDataViewModel.userList[userIndex].contain.values.elementAt(con))
             }

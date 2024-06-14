@@ -6,6 +6,6 @@ data class UserData(
     var pw:String,
     var name:String,
     var favourite:MutableList<Int>,
-    var memo:MutableMap<Int, String>,
-    var contain:MutableMap<Int, String>
+    var memo:MutableMap<String, String>,
+    var contain:MutableMap<String, String>
 )

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.fridgefriend.database.UserDataDBViewModel
 import com.example.fridgefriend.viewmodel.CardData
 import com.example.fridgefriend.viewmodel.CardDataViewModel
 import com.example.fridgefriend.viewmodel.UserDataViewModel
@@ -26,6 +27,7 @@ import com.example.fridgefriend.viewmodel.UserDataViewModel
 @Composable
 fun FavouriteScreen(
     navController: NavHostController,
+    userDataDBViewModel: UserDataDBViewModel,
     userDataViewModel: UserDataViewModel,
     cardDataViewModel: CardDataViewModel = viewModel()
 ) {
@@ -39,6 +41,15 @@ fun FavouriteScreen(
     LaunchedEffect(userDataViewModel.userList[userIndex].favourite) {
         cardDataViewModel.cardList.forEach { card ->
             card.like = card.cardID in userDataViewModel.userList[userIndex].favourite
+        }
+    }
+
+    // 해당 유저의 메모 목록을 메뉴 목록(viewmodel)에 적용
+    LaunchedEffect(userDataViewModel.userList[userIndex].memo) {
+        cardDataViewModel.cardList.forEachIndexed { index, card ->
+            userDataViewModel.userList[userIndex].memo[card.cardID.toString()]?.let { memo ->
+                cardDataViewModel.changeMemo(index, memo)
+            }
         }
     }
 
@@ -91,7 +102,7 @@ fun FavouriteScreen(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 items(favouriteCardList, key = { it.cardID }) { card ->
-                    CardView(card, cardDataViewModel, userDataViewModel, onCardClick = { selectedCard = it })
+                    CardView(card, cardDataViewModel, userDataDBViewModel, userDataViewModel, onCardClick = { selectedCard = it })
                 }
             }
         } else {
@@ -102,7 +113,7 @@ fun FavouriteScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(favouriteCardList, key = { it.cardID }) { card ->
-                    ListView(card, cardDataViewModel, userDataViewModel)
+                    ListView(card, cardDataViewModel, userDataDBViewModel, userDataViewModel)
                 }
             }
         }
@@ -113,7 +124,8 @@ fun FavouriteScreen(
             card = card,
             onDismissRequest = { selectedCard = null },
             cardDataViewModel = cardDataViewModel,
-            userDataViewModel = userDataViewModel
+            userDataViewModel = userDataViewModel,
+            userDataDBViewModel = userDataDBViewModel
         )
     }
 }

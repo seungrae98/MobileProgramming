@@ -1,5 +1,6 @@
 package com.example.fridgefriend.screen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,15 +31,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.fridgefriend.database.UserDataDB
+import com.example.fridgefriend.database.UserDataDBViewModel
 import com.example.fridgefriend.viewmodel.CardData
 import com.example.fridgefriend.viewmodel.CardDataViewModel
 import com.example.fridgefriend.viewmodel.IngredientDataViewModel
+import com.example.fridgefriend.viewmodel.UserData
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     navController: NavHostController,
+    userDataDBViewModel: UserDataDBViewModel,
     userDataViewModel: UserDataViewModel,
     cardDataViewModel: CardDataViewModel = viewModel(),
     ingredientDataViewModel: IngredientDataViewModel = viewModel()
@@ -63,7 +68,7 @@ fun SearchScreen(
     // 해당 유저의 메모 목록을 메뉴 목록(viewmodel)에 적용
     LaunchedEffect(userDataViewModel.userList[userIndex].memo) {
         cardDataViewModel.cardList.forEachIndexed { index, card ->
-            userDataViewModel.userList[userIndex].memo[card.cardID]?.let { memo ->
+            userDataViewModel.userList[userIndex].memo[card.cardID.toString()]?.let { memo ->
                 cardDataViewModel.changeMemo(index, memo)
             }
         }
@@ -72,7 +77,7 @@ fun SearchScreen(
     // 해당 유저의 재료 목록을 재료 목록(viewmodel)에 적용
     LaunchedEffect(userDataViewModel.userList[userIndex].contain) {
         ingredientDataViewModel.ingredientList.forEachIndexed { index, ingredient ->
-            userDataViewModel.userList[userIndex].contain[ingredient.id]?.let { expireDate ->
+            userDataViewModel.userList[userIndex].contain[ingredient.id.toString()]?.let { expireDate ->
                 ingredientDataViewModel.changeExpireDate(index, expireDate)
                 ingredient.contain = true
             }
@@ -159,7 +164,7 @@ fun SearchScreen(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 items(filteredCardList, key = { it.cardID }) { card ->
-                    CardView(card, cardDataViewModel, userDataViewModel, onCardClick = { selectedCard = it })
+                    CardView(card, cardDataViewModel, userDataDBViewModel, userDataViewModel, onCardClick = { selectedCard = it })
                 }
             }
         } else {
@@ -170,7 +175,7 @@ fun SearchScreen(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(filteredCardList, key = { it.cardID }) { card ->
-                    ListView(card, cardDataViewModel, userDataViewModel)
+                    ListView(card, cardDataViewModel, userDataDBViewModel, userDataViewModel)
                 }
             }
         }
@@ -193,7 +198,8 @@ fun SearchScreen(
             card = card,
             onDismissRequest = { selectedCard = null },
             cardDataViewModel = cardDataViewModel,
-            userDataViewModel = userDataViewModel
+            userDataViewModel = userDataViewModel,
+            userDataDBViewModel = userDataDBViewModel
         )
     }
 }
@@ -202,6 +208,7 @@ fun SearchScreen(
 fun CardView(
     card: CardData,
     cardDataViewModel: CardDataViewModel,
+    userDataDBViewModel: UserDataDBViewModel,
     userDataViewModel: UserDataViewModel,
     onCardClick: (CardData) -> Unit
 ) {
@@ -238,12 +245,21 @@ fun CardView(
                 fontSize = 20.sp
             )
             IconButton(onClick = {
-                cardDataViewModel.changeLike(card.cardID)
+                cardDataViewModel.changeLike(card.cardID - 101)
                 if (like) {
                     userDataViewModel.userList[userIndex].favourite.remove(card.cardID)
                 } else {
                     userDataViewModel.userList[userIndex].favourite.add(card.cardID)
                 }
+                val userDBSample = UserDataDB(
+                    id = userDataViewModel.userList[userIndex].id,
+                    pw = userDataViewModel.userList[userIndex].pw,
+                    name = userDataViewModel.userList[userIndex].name,
+                    favourite = userDataViewModel.userList[userIndex].favourite.toList(),
+                    memo = userDataViewModel.userList[userIndex].memo.toMap(),
+                    contain = userDataViewModel.userList[userIndex].contain.toMap()
+                )
+                userDataDBViewModel.updateItem(userDBSample)
             }) {
                 Icon(
                     imageVector = if (like) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
@@ -262,7 +278,10 @@ fun CardView(
 }
 
 @Composable
-fun ListView(card: CardData, cardDataViewModel: CardDataViewModel, userDataViewModel: UserDataViewModel) {
+fun ListView(card: CardData,
+             cardDataViewModel: CardDataViewModel,
+             userDataDBViewModel: UserDataDBViewModel,
+             userDataViewModel: UserDataViewModel) {
     val userIndex = userDataViewModel.userIndex.value
     val like by rememberUpdatedState(newValue = card.like)
 
@@ -281,12 +300,21 @@ fun ListView(card: CardData, cardDataViewModel: CardDataViewModel, userDataViewM
             fontSize = 20.sp
         )
         IconButton(onClick = {
-            cardDataViewModel.changeLike(card.cardID)
+            cardDataViewModel.changeLike(card.cardID - 101)
             if (like) {
                 userDataViewModel.userList[userIndex].favourite.remove(card.cardID)
             } else {
                 userDataViewModel.userList[userIndex].favourite.add(card.cardID)
             }
+            val userDBSample = UserDataDB(
+                id = userDataViewModel.userList[userIndex].id,
+                pw = userDataViewModel.userList[userIndex].pw,
+                name = userDataViewModel.userList[userIndex].name,
+                favourite = userDataViewModel.userList[userIndex].favourite.toList(),
+                memo = userDataViewModel.userList[userIndex].memo.toMap(),
+                contain = userDataViewModel.userList[userIndex].contain.toMap()
+            )
+            userDataDBViewModel.updateItem(userDBSample)
         }) {
             Icon(
                 imageVector = if (like) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
@@ -307,7 +335,7 @@ fun IngredientDialog(
     val scrollState = rememberScrollState()
     val userIndex = userDataViewModel.userIndex.value
     val userIngredients = userDataViewModel.userList[userIndex].contain.keys.map { ingredientId ->
-        ingredientDataViewModel.ingredientList.firstOrNull { it.id == ingredientId }?.name ?: ""
+        ingredientDataViewModel.ingredientList.firstOrNull { it.id.toString() == ingredientId }?.name ?: ""
     }
     var selectedIngredients by rememberSaveable { mutableStateOf(userIngredients) }
 
@@ -359,7 +387,8 @@ fun CardDetailDialog(
     card: CardData,
     onDismissRequest: () -> Unit,
     cardDataViewModel: CardDataViewModel,
-    userDataViewModel: UserDataViewModel
+    userDataViewModel: UserDataViewModel,
+    userDataDBViewModel: UserDataDBViewModel
 ) {
     val userIndex = userDataViewModel.userIndex.value
     var memo by rememberSaveable { mutableStateOf(card.memo) }
@@ -394,12 +423,21 @@ fun CardDetailDialog(
                     )
                     IconButton(onClick = {
                         like = !like
-                        cardDataViewModel.changeLike(card.cardID)
+                        cardDataViewModel.changeLike(card.cardID - 101)
                         if (card.like) {
                             userDataViewModel.userList[userIndex].favourite.remove(card.cardID)
                         } else {
                             userDataViewModel.userList[userIndex].favourite.add(card.cardID)
                         }
+                        val userDBSample = UserDataDB(
+                            id = userDataViewModel.userList[userIndex].id,
+                            pw = userDataViewModel.userList[userIndex].pw,
+                            name = userDataViewModel.userList[userIndex].name,
+                            favourite = userDataViewModel.userList[userIndex].favourite.toList(),
+                            memo = userDataViewModel.userList[userIndex].memo.toMap(),
+                            contain = userDataViewModel.userList[userIndex].contain.toMap()
+                        )
+                        userDataDBViewModel.updateItem(userDBSample)
                     }) {
                         Icon(
                             imageVector = if (like) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
@@ -423,8 +461,18 @@ fun CardDetailDialog(
         },
         confirmButton = {
             Button(onClick = {
-                cardDataViewModel.changeMemo(card.cardID, memo)
-                userDataViewModel.userList[userIndex].memo[card.cardID] = memo
+                cardDataViewModel.changeMemo(card.cardID - 101, memo)
+                userDataViewModel.userList[userIndex].memo[card.cardID.toString()] = memo
+
+                val userDBSample = UserDataDB(
+                    id = userDataViewModel.userList[userIndex].id,
+                    pw = userDataViewModel.userList[userIndex].pw,
+                    name = userDataViewModel.userList[userIndex].name,
+                    favourite = userDataViewModel.userList[userIndex].favourite.toList(),
+                    memo = userDataViewModel.userList[userIndex].memo.toMap(),
+                    contain = userDataViewModel.userList[userIndex].contain.toMap()
+                )
+                userDataDBViewModel.updateItem(userDBSample)
                 onDismissRequest()
             }) {
                 Text(text = "저장")

@@ -28,12 +28,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.fridgefriend.database.UserDataDBViewModel
 import com.example.fridgefriend.navigation.Routes
+import com.example.fridgefriend.database.UserDataDB
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 import java.net.URLEncoder
 
 @Composable
 fun SettingsScreen(navController: NavHostController,
+                   userDataDBViewModel: UserDataDBViewModel,
                    userDataViewModel: UserDataViewModel) {
 
     val userIndex = userDataViewModel.userIndex.intValue
@@ -110,13 +113,37 @@ fun SettingsScreen(navController: NavHostController,
                 Text(text = "웹 뷰 열기")
             }
         }
+
+        Button(
+            onClick = {
+                val userDataDBSample4 = UserDataDB(
+                    "id4",
+                    "1234",
+                    "user4",
+                    listOf<Int>(101, 102, 103, 105),
+                    mapOf<String, String>("103" to "memo for card3 from user4", "104" to "memo for card4 from user4", "105" to "memo for card5 from user4"),
+                    mapOf<String, String>("202" to "20240601", "204" to "20240602")
+                )
+                userDataDBViewModel.insertItem(userDataDBSample4)
+            },
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 16.dp) // Adjust padding as needed
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Text(text = "유저 추가 예시 버튼")
+            }
+        }
     }
 
     if (isChangePwDialogVisible) {
         ChangePasswordDialog(
             onDismiss = { isChangePwDialogVisible = false },
             onChangePassword = { newPassword ->
-                userDataViewModel.changePw(userIndex, newPassword)
+                userDataViewModel.changePw(userDataDBViewModel, userIndex, newPassword)
                 isChangePwDialogVisible = false
                 showToastMessage = true
             }
