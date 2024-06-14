@@ -46,4 +46,8 @@ class UserDataViewModel : ViewModel(){
         }
         return false
     }
+
+    fun changePw(index: Int, newPw: String) {
+        userList[index] = userList[index].copy(pw = newPw)
+    }
 }

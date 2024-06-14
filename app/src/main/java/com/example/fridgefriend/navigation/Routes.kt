@@ -8,4 +8,5 @@ sealed class Routes(val route: String) {
     object Search : Routes("Search")
     object Favourite : Routes("Favourite")
     object Settings : Routes("Settings")
+    object WebView : Routes("WebView")
 }
