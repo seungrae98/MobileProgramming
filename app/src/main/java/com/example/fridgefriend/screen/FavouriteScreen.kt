@@ -123,6 +123,7 @@ fun FavouriteScreen(
         CardDetailDialog(
             card = card,
             onDismissRequest = { selectedCard = null },
+            navController = navController,
             cardDataViewModel = cardDataViewModel,
             userDataViewModel = userDataViewModel,
             userDataDBViewModel = userDataDBViewModel

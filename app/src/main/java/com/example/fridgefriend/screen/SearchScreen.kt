@@ -33,11 +33,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fridgefriend.database.UserDataDB
 import com.example.fridgefriend.database.UserDataDBViewModel
+import com.example.fridgefriend.navigation.Routes
 import com.example.fridgefriend.viewmodel.CardData
 import com.example.fridgefriend.viewmodel.CardDataViewModel
 import com.example.fridgefriend.viewmodel.IngredientDataViewModel
 import com.example.fridgefriend.viewmodel.UserData
 import com.example.fridgefriend.viewmodel.UserDataViewModel
+import java.net.URLEncoder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -197,6 +199,7 @@ fun SearchScreen(
         CardDetailDialog(
             card = card,
             onDismissRequest = { selectedCard = null },
+            navController = navController,
             cardDataViewModel = cardDataViewModel,
             userDataViewModel = userDataViewModel,
             userDataDBViewModel = userDataDBViewModel
@@ -386,6 +389,7 @@ fun IngredientDialog(
 fun CardDetailDialog(
     card: CardData,
     onDismissRequest: () -> Unit,
+    navController: NavHostController,
     cardDataViewModel: CardDataViewModel,
     userDataViewModel: UserDataViewModel,
     userDataDBViewModel: UserDataDBViewModel
@@ -449,7 +453,17 @@ fun CardDetailDialog(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(text = "Ingredients: ${card.mainIngredient.joinToString(", ")}")
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "Recipe Link: ${card.recipeLink.joinToString(", ")}")
+                Button(
+                    onClick = {
+                        val url = card.recipeLink[0]
+                        onDismissRequest()
+                        navController.navigate(Routes.WebView.route + "/${URLEncoder.encode(url, "UTF-8")}")
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 8.dp) // Adjust padding as needed
+                ) {
+                    Text(text = "레시피 바로가기")
+                }
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
                     value = memo,
