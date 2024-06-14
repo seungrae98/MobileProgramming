@@ -1,101 +1,119 @@
 package com.example.fridgefriend.screen
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.fridgefriend.viewmodel.CardData
 import com.example.fridgefriend.viewmodel.CardDataViewModel
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 
 @Composable
-fun FavouriteScreen(navController: NavHostController,
-                    userDataViewModel: UserDataViewModel,
-                    cardDataViewModel: CardDataViewModel = viewModel()) {
-
-    val scrollState = rememberScrollState()
+fun FavouriteScreen(
+    navController: NavHostController,
+    userDataViewModel: UserDataViewModel,
+    cardDataViewModel: CardDataViewModel = viewModel()
+) {
     val userIndex = userDataViewModel.userIndex.value
+    var isCardView by rememberSaveable { mutableStateOf(true) }
+    val listState = rememberLazyListState()
+    val scrollState = rememberLazyListState()
+    var selectedCard by rememberSaveable { mutableStateOf<CardData?>(null) }
 
     // 해당 유저의 좋아요 목록을 메뉴 목록(viewmodel)에 적용
-    repeat(cardDataViewModel.cardList.size) {
-        repeat(userDataViewModel.userList[userIndex].favourite.size) { fav ->
-            if (cardDataViewModel.cardList[it].cardID == userDataViewModel.userList[userIndex].favourite[fav])
-                cardDataViewModel.cardList[it].like = true
+    LaunchedEffect(userDataViewModel.userList[userIndex].favourite) {
+        cardDataViewModel.cardList.forEach { card ->
+            card.like = card.cardID in userDataViewModel.userList[userIndex].favourite
         }
     }
 
-    // 해당 유저의 메모 목록을 메뉴 목록(viewmodel)에 적용
-    repeat(cardDataViewModel.cardList.size) {
-        repeat(userDataViewModel.userList[userIndex].memo.size) { con ->
-            if (cardDataViewModel.cardList[it].cardID == userDataViewModel.userList[userIndex].memo.keys.elementAt(con)) {
-                cardDataViewModel.changeMemo(it, userDataViewModel.userList[userIndex].memo.values.elementAt(con))
-            }
-        }
-    }
-
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Text(
-            text = userDataViewModel.userList[userIndex].name,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 20.sp
-        )
-        Text(
-            text = userDataViewModel.userList[userIndex].favourite.joinToString(),
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 20.sp
-        )
-        Text(
-            text = "",
-            fontSize = 20.sp
-        )
-
-        repeat(cardDataViewModel.cardList.size) {
-            if (cardDataViewModel.cardList[it].like) {
-                Text(
-                    text = cardDataViewModel.cardList[it].name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontSize = 20.sp
-                )
-                Text(
-                    text = cardDataViewModel.cardList[it].mainIngredient.joinToString(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontSize = 20.sp
-                )
-                Text(
-                    text = cardDataViewModel.cardList[it].memo,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontSize = 20.sp
-                )
-                Text(
-                    text = cardDataViewModel.cardList[it].recipeLink.joinToString(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontSize = 20.sp
-                )
-                Text(
-                    text = cardDataViewModel.cardList[it].like.toString(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontSize = 20.sp
-                )
-                Text(
-                    text = "",
-                    fontSize = 20.sp
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(72.dp)
+                    .height(40.dp)
+                    .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
+                    .clip(CircleShape)
+                    .clickable { isCardView = !isCardView }
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .offset(
+                            x = if (isCardView) 4.dp else 36.dp,
+                            y = 4.dp
+                        )
+                        .background(Color.White, shape = CircleShape)
                 )
             }
+            Box(
+                modifier = Modifier
+                    .width(50.dp)
+                    .padding(start = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = if (isCardView) "Card" else "List")
+            }
         }
+
+        val favouriteCardList = cardDataViewModel.cardList.filter { it.like }
+
+        if (isCardView) {
+            // 카드 형식 출력
+            LazyRow(
+                state = scrollState,
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                items(favouriteCardList, key = { it.cardID }) { card ->
+                    CardView(card, cardDataViewModel, userDataViewModel, onCardClick = { selectedCard = it })
+                }
+            }
+        } else {
+            // 리스트 형식 출력
+            LazyColumn(
+                state = listState,
+                contentPadding = PaddingValues(vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                items(favouriteCardList, key = { it.cardID }) { card ->
+                    ListView(card, cardDataViewModel, userDataViewModel)
+                }
+            }
+        }
+    }
+
+    selectedCard?.let { card ->
+        CardDetailDialog(
+            card = card,
+            onDismissRequest = { selectedCard = null },
+            cardDataViewModel = cardDataViewModel,
+            userDataViewModel = userDataViewModel
+        )
     }
 }

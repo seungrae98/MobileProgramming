@@ -6,5 +6,6 @@ data class CardData(
     var mainIngredient:List<String>,
     var memo:String = "",
     var recipeLink:List<String>,
-    var like:Boolean = false
+    var like:Boolean = false,
+    var imageResId:Int //이미지
 )
