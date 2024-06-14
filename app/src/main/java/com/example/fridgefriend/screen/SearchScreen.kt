@@ -1,5 +1,6 @@
 package com.example.fridgefriend.screen
 
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,6 +25,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -33,6 +37,7 @@ import androidx.navigation.NavHostController
 import com.example.fridgefriend.viewmodel.CardData
 import com.example.fridgefriend.viewmodel.CardDataViewModel
 import com.example.fridgefriend.viewmodel.IngredientDataViewModel
+import com.example.fridgefriend.viewmodel.SearchViewModel
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,31 +46,36 @@ fun SearchScreen(
     navController: NavHostController,
     userDataViewModel: UserDataViewModel,
     cardDataViewModel: CardDataViewModel = viewModel(),
-    ingredientDataViewModel: IngredientDataViewModel = viewModel()
+    ingredientDataViewModel: IngredientDataViewModel = viewModel(),
+    searchViewModel: SearchViewModel = viewModel()
 ) {
-    val userIndex = userDataViewModel.userIndex.value
-    var isCardView by rememberSaveable { mutableStateOf(true) }
-    var searchText by rememberSaveable { mutableStateOf("") }
-    var searchQuery by rememberSaveable { mutableStateOf("") }
+    val userIndex by remember { userDataViewModel.userIndex }
+    var isListView by remember { searchViewModel.isCardView }
+    var searchText by remember { searchViewModel.searchText }
+    var searchQuery by remember { searchViewModel.searchQuery }
     var showIngredientDialog by rememberSaveable { mutableStateOf(false) }
-    var selectedIngredients by rememberSaveable { mutableStateOf<List<String>>(emptyList()) }
-    val listState = rememberLazyListState()
-    val scrollState = rememberLazyListState()
-    var selectedCard by rememberSaveable { mutableStateOf<CardData?>(null) }
+    var selectedIngredients by remember { searchViewModel.selectedIngredients }
+    val listState = rememberLazyListState(initialFirstVisibleItemIndex = searchViewModel.scrollState.value)
+    val scrollState = rememberLazyListState(initialFirstVisibleItemIndex = searchViewModel.scrollState.value)
+    var selectedCard by remember { searchViewModel.selectedCard }
 
-    // 해당 유저의 좋아요 목록을 메뉴 목록(viewmodel)에 적용
-    LaunchedEffect(userDataViewModel.userList[userIndex].favourite) {
-        cardDataViewModel.cardList.forEach { card ->
-            card.like = card.cardID in userDataViewModel.userList[userIndex].favourite
+    // Save scroll state when leaving the screen
+    DisposableEffect(Unit) {
+        onDispose {
+            searchViewModel.scrollState.value = if (isListView) listState.firstVisibleItemIndex else scrollState.firstVisibleItemIndex
         }
     }
 
-    // 해당 유저의 메모 목록을 메뉴 목록(viewmodel)에 적용
-    LaunchedEffect(userDataViewModel.userList[userIndex].memo) {
-        cardDataViewModel.cardList.forEachIndexed { index, card ->
-            userDataViewModel.userList[userIndex].memo[card.cardID]?.let { memo ->
-                cardDataViewModel.changeMemo(index, memo)
-            }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
+    // 좋아요 및 메모 정보 반영
+    LaunchedEffect(Unit) {
+        userDataViewModel.userList[userIndex].favourite.forEach { favouriteId ->
+            cardDataViewModel.updateCardLike(favouriteId, true)
+        }
+        userDataViewModel.userList[userIndex].memo.forEach { (cardID, memo) ->
+            cardDataViewModel.updateCardMemo(cardID, memo)
         }
     }
 
@@ -98,7 +108,11 @@ fun SearchScreen(
                     .padding(8.dp)
             )
             Button(
-                onClick = { searchQuery = searchText }
+                onClick = {
+                    searchQuery = searchText
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                }
             ) {
                 Text(text = "검색")
             }
@@ -109,28 +123,19 @@ fun SearchScreen(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Button(
-                onClick = { showIngredientDialog = true },
-                modifier = Modifier
-            ) {
-                Text(text = "보유 재료 검색")
-            }
-
-            Spacer(modifier = Modifier.width(20.dp))
-
             Box(
                 modifier = Modifier
                     .width(72.dp)
                     .height(40.dp)
                     .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
                     .clip(CircleShape)
-                    .clickable { isCardView = !isCardView }
+                    .clickable { isListView = !isListView }
             ) {
                 Box(
                     modifier = Modifier
                         .size(32.dp)
                         .offset(
-                            x = if (isCardView) 4.dp else 36.dp,
+                            x = if (isListView) 36.dp else 4.dp,
                             y = 4.dp
                         )
                         .background(Color.White, shape = CircleShape)
@@ -142,17 +147,45 @@ fun SearchScreen(
                     .padding(start = 8.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = if (isCardView) "Card" else "List")
+                Text(text = if (isListView) "List" else "Card")
+            }
+
+            Spacer(modifier = Modifier.width(20.dp))
+
+            Button(
+                onClick = {
+                    showIngredientDialog = true
+                    keyboardController?.hide() // 키보드를 숨깁니다.
+                    focusManager.clearFocus()
+                },
+                modifier = Modifier
+            ) {
+                Text(text = "보유 재료 검색")
             }
         }
 
         // 필터링된 메뉴 출력
-        val filteredCardList = cardDataViewModel.cardList.filter {
-            it.name.contains(searchQuery, ignoreCase = true) &&
-                    (selectedIngredients.isEmpty() || it.mainIngredient.any { ingredient -> selectedIngredients.contains(ingredient) })
+        val filteredCardList by remember(searchQuery, selectedIngredients) {
+            derivedStateOf {
+                cardDataViewModel.cardList.filter {
+                    it.name.contains(searchQuery, ignoreCase = true) &&
+                            (selectedIngredients.isEmpty() || it.mainIngredient.any { ingredient -> selectedIngredients.contains(ingredient) })
+                }
+            }
         }
 
-        if (isCardView) {
+        if (isListView) {
+            // 리스트 형식 출력
+            LazyColumn(
+                state = listState,
+                contentPadding = PaddingValues(vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                items(filteredCardList, key = { it.cardID }) { card ->
+                    ListView(card, cardDataViewModel, userDataViewModel, onCardClick = { selectedCard = it })
+                }
+            }
+        } else {
             // 카드 형식 출력
             LazyRow(
                 state = scrollState,
@@ -162,17 +195,6 @@ fun SearchScreen(
                     CardView(card, cardDataViewModel, userDataViewModel, onCardClick = { selectedCard = it })
                 }
             }
-        } else {
-            // 리스트 형식 출력
-            LazyColumn(
-                state = listState,
-                contentPadding = PaddingValues(vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                items(filteredCardList, key = { it.cardID }) { card ->
-                    ListView(card, cardDataViewModel, userDataViewModel)
-                }
-            }
         }
     }
 
@@ -180,7 +202,10 @@ fun SearchScreen(
         IngredientDialog(
             ingredientDataViewModel = ingredientDataViewModel,
             userDataViewModel = userDataViewModel,
-            onDismissRequest = { showIngredientDialog = false },
+            onDismissRequest = {
+                showIngredientDialog = false
+                focusManager.clearFocus() // 포커스를 해제하여 키보드가 뜨지 않도록 합니다.
+            },
             onApply = { selected ->
                 selectedIngredients = selected
                 showIngredientDialog = false
@@ -205,8 +230,12 @@ fun CardView(
     userDataViewModel: UserDataViewModel,
     onCardClick: (CardData) -> Unit
 ) {
-    val userIndex = userDataViewModel.userIndex.value
-    val like by rememberUpdatedState(newValue = card.like)
+    val userIndex by remember { userDataViewModel.userIndex }
+    var like by remember { mutableStateOf(card.like) }
+
+    LaunchedEffect(card.like) {
+        like = card.like
+    }
 
     Column(
         modifier = Modifier
@@ -238,11 +267,12 @@ fun CardView(
                 fontSize = 20.sp
             )
             IconButton(onClick = {
-                cardDataViewModel.changeLike(card.cardID)
+                like = !like
+                cardDataViewModel.updateCardLike(card.cardID, like)
                 if (like) {
-                    userDataViewModel.userList[userIndex].favourite.remove(card.cardID)
-                } else {
                     userDataViewModel.userList[userIndex].favourite.add(card.cardID)
+                } else {
+                    userDataViewModel.userList[userIndex].favourite.remove(card.cardID)
                 }
             }) {
                 Icon(
@@ -262,16 +292,26 @@ fun CardView(
 }
 
 @Composable
-fun ListView(card: CardData, cardDataViewModel: CardDataViewModel, userDataViewModel: UserDataViewModel) {
-    val userIndex = userDataViewModel.userIndex.value
-    val like by rememberUpdatedState(newValue = card.like)
+fun ListView(
+    card: CardData,
+    cardDataViewModel: CardDataViewModel,
+    userDataViewModel: UserDataViewModel,
+    onCardClick: (CardData) -> Unit
+) {
+    val userIndex by remember { userDataViewModel.userIndex }
+    var like by remember { mutableStateOf(card.like) }
+
+    LaunchedEffect(card.like) {
+        like = card.like
+    }
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
-            .padding(16.dp),
+            .padding(16.dp)
+            .clickable { onCardClick(card) },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -281,11 +321,12 @@ fun ListView(card: CardData, cardDataViewModel: CardDataViewModel, userDataViewM
             fontSize = 20.sp
         )
         IconButton(onClick = {
-            cardDataViewModel.changeLike(card.cardID)
+            like = !like
+            cardDataViewModel.updateCardLike(card.cardID, like)
             if (like) {
-                userDataViewModel.userList[userIndex].favourite.remove(card.cardID)
-            } else {
                 userDataViewModel.userList[userIndex].favourite.add(card.cardID)
+            } else {
+                userDataViewModel.userList[userIndex].favourite.remove(card.cardID)
             }
         }) {
             Icon(
@@ -297,6 +338,7 @@ fun ListView(card: CardData, cardDataViewModel: CardDataViewModel, userDataViewM
     }
 }
 
+
 @Composable
 fun IngredientDialog(
     ingredientDataViewModel: IngredientDataViewModel,
@@ -305,7 +347,7 @@ fun IngredientDialog(
     onApply: (List<String>) -> Unit
 ) {
     val scrollState = rememberScrollState()
-    val userIndex = userDataViewModel.userIndex.value
+    val userIndex by remember { userDataViewModel.userIndex }
     val userIngredients = userDataViewModel.userList[userIndex].contain.keys.map { ingredientId ->
         ingredientDataViewModel.ingredientList.firstOrNull { it.id == ingredientId }?.name ?: ""
     }
@@ -361,7 +403,7 @@ fun CardDetailDialog(
     cardDataViewModel: CardDataViewModel,
     userDataViewModel: UserDataViewModel
 ) {
-    val userIndex = userDataViewModel.userIndex.value
+    val userIndex by remember { userDataViewModel.userIndex }
     var memo by rememberSaveable { mutableStateOf(card.memo) }
     var like by remember { mutableStateOf(card.like) }
 
@@ -394,12 +436,6 @@ fun CardDetailDialog(
                     )
                     IconButton(onClick = {
                         like = !like
-                        cardDataViewModel.changeLike(card.cardID)
-                        if (card.like) {
-                            userDataViewModel.userList[userIndex].favourite.remove(card.cardID)
-                        } else {
-                            userDataViewModel.userList[userIndex].favourite.add(card.cardID)
-                        }
                     }) {
                         Icon(
                             imageVector = if (like) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
@@ -423,7 +459,13 @@ fun CardDetailDialog(
         },
         confirmButton = {
             Button(onClick = {
-                cardDataViewModel.changeMemo(card.cardID, memo)
+                cardDataViewModel.updateCardMemo(card.cardID, memo)
+                cardDataViewModel.updateCardLike(card.cardID, like)
+                if (like) {
+                    userDataViewModel.userList[userIndex].favourite.add(card.cardID)
+                } else {
+                    userDataViewModel.userList[userIndex].favourite.remove(card.cardID)
+                }
                 userDataViewModel.userList[userIndex].memo[card.cardID] = memo
                 onDismissRequest()
             }) {

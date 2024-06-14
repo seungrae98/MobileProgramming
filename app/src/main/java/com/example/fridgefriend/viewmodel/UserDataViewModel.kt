@@ -19,7 +19,7 @@ class UserDataViewModel : ViewModel(){
             "id1",
             "1234",
             "user1",
-            mutableListOf<Int>(1, 2, 3),
+            mutableListOf<Int>(1, 2, 3, 4, 5),
             mutableMapOf<Int, String>(1 to "memo for card1 from user1", 5 to "memo for card5 from user1"),
             mutableMapOf<Int, String>(1 to "20240530", 2 to "20240531")
         )
