@@ -671,13 +671,19 @@ class CardDataViewModel(): ViewModel() {
         cardList.add(cardDataSample66)
     }
 
-    // 메모 저장하면 메모 변경
-    fun changeMemo(index:Int, memo:String) {
-        cardList[index] = cardList[index].copy(memo = memo)
+    // 카드의 메모를 업데이트하는 함수
+    fun updateCardMemo(cardID: Int, memo: String) {
+        val index = cardList.indexOfFirst { it.cardID == cardID }
+        if (index != -1) {
+            cardList[index] = cardList[index].copy(memo = memo)
+        }
     }
 
-    // 카드 누르면 좋아요 상태 변경
-    fun changeLike(index:Int) {
-        cardList[index] = cardList[index].copy(like = !cardList[index].like)
+    // 카드 ID로 좋아요 상태 설정
+    fun updateCardLike(cardID: Int, like: Boolean) {
+        val index = cardList.indexOfFirst { it.cardID == cardID }
+        if (index != -1) {
+            cardList[index] = cardList[index].copy(like = like)
+        }
     }
 }

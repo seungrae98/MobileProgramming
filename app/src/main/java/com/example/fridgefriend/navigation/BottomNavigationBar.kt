@@ -24,8 +24,11 @@ fun BottomNavigationBar(navController: NavController) {
                 selected = currentRoute == navItem.route,
                 onClick = {
                     navController.navigate(navItem.route) {
-                        popUpTo(0)
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true // 상태 저장
+                        }
                         launchSingleTop = true
+                        restoreState = true // 상태 복원
                     }
                 },
                 icon = {
@@ -41,4 +44,3 @@ fun BottomNavigationBar(navController: NavController) {
         }
     }
 }
-
