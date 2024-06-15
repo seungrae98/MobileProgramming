@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -36,12 +35,10 @@ import androidx.navigation.NavHostController
 import com.example.fridgefriend.database.UserDataDB
 import com.example.fridgefriend.database.UserDataDBViewModel
 import com.example.fridgefriend.navigation.Routes
-import com.example.fridgefriend.viewmodel.CardData
-import com.example.fridgefriend.viewmodel.CardDataViewModel
-import com.example.fridgefriend.viewmodel.IngredientDataViewModel
-import com.example.fridgefriend.viewmodel.SearchViewModel
-import com.example.fridgefriend.viewmodel.UserDataViewModel
+import com.example.fridgefriend.viewmodel.*
 import java.net.URLEncoder
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -178,25 +175,67 @@ fun SearchScreen(
             }
         }
 
-        if (isListView) {
-            // 리스트 형식 출력
-            LazyColumn(
-                state = listState,
-                contentPadding = PaddingValues(vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                items(filteredCardList, key = { it.cardID }) { card ->
-                    ListView(card, cardDataViewModel, userDataDBViewModel, userDataViewModel, onCardClick = { selectedCard = it })
+        if (selectedIngredients.isEmpty()) {
+            if (isListView) {
+                // 리스트 형식 출력
+                LazyColumn(
+                    state = listState,
+                    contentPadding = PaddingValues(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    items(filteredCardList, key = { it.cardID }) { card ->
+                        ListView(card, cardDataViewModel, userDataDBViewModel, userDataViewModel, onCardClick = { selectedCard = it })
+                    }
+                }
+            } else {
+                // 카드 형식 출력
+                LazyRow(
+                    state = scrollState,
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    items(filteredCardList, key = { it.cardID }) { card ->
+                        CardView(card, cardDataViewModel, userDataDBViewModel, userDataViewModel, onCardClick = { selectedCard = it })
+                    }
                 }
             }
         } else {
-            // 카드 형식 출력
-            LazyRow(
-                state = scrollState,
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                items(filteredCardList, key = { it.cardID }) { card ->
-                    CardView(card, cardDataViewModel, userDataDBViewModel, userDataViewModel, onCardClick = { selectedCard = it })
+            if (isListView) {
+                // 보유 재료 검색 후 리스트 형식 출력
+                LazyColumn(
+                    state = listState,
+                    contentPadding = PaddingValues(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    items(filteredCardList, key = { it.cardID }) { card ->
+                        ListView(card, cardDataViewModel, userDataDBViewModel, userDataViewModel, onCardClick = { selectedCard = it })
+                    }
+                }
+            } else {
+                // 보유 재료 검색 후 카드 형식 출력
+                LazyColumn(
+                    state = listState,
+                    contentPadding = PaddingValues(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    selectedIngredients.forEach { ingredient ->
+                        item {
+                            Text(
+                                text = ingredient,
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = Color.Black,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
+                        item {
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                            ) {
+                                items(filteredCardList.filter { it.mainIngredient.contains(ingredient) }, key = { it.cardID }) { card ->
+                                    CardView(card, cardDataViewModel, userDataDBViewModel, userDataViewModel, onCardClick = { selectedCard = it })
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -364,7 +403,6 @@ fun ListView(
     }
 }
 
-
 @Composable
 fun IngredientDialog(
     ingredientDataViewModel: IngredientDataViewModel,
@@ -374,37 +412,83 @@ fun IngredientDialog(
 ) {
     val scrollState = rememberScrollState()
     val userIndex by remember { userDataViewModel.userIndex }
-    val userIngredients = userDataViewModel.userList[userIndex].contain.keys.map { ingredientId ->
-        ingredientDataViewModel.ingredientList.firstOrNull { it.id.toString() == ingredientId }?.name ?: ""
+    val userContainIngredients = userDataViewModel.userList[userIndex].contain.keys.map { ingredientId ->
+        ingredientId.toInt()
     }
-    var selectedIngredients by rememberSaveable { mutableStateOf(userIngredients) }
+    val ingredientList = ingredientDataViewModel.ingredientList
+    var selectedIngredients by rememberSaveable { mutableStateOf(listOf<String>()) }
+    val categories = listOf("1", "2", "3")
+    val ingredientsByCategory = listOf(
+        ingredientList.subList(0, 20),
+        ingredientList.subList(20, 40),
+        ingredientList.subList(40, 52)
+    )
+    val expandedState = remember { mutableStateMapOf("1" to true, "2" to true, "3" to true) }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text(text = "보유 재료 검색") },
+        title = { Text(text = "재료 선택") },
         text = {
             Column(
                 modifier = Modifier
                     .verticalScroll(scrollState)
                     .padding(8.dp)
             ) {
-                userIngredients.forEach { ingredient ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Checkbox(
-                            checked = selectedIngredients.contains(ingredient),
-                            onCheckedChange = {
-                                if (it) {
-                                    selectedIngredients = selectedIngredients + ingredient
-                                } else {
-                                    selectedIngredients = selectedIngredients - ingredient
+                categories.forEachIndexed { index, category ->
+                    val isExpanded = expandedState[category] ?: true
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    expandedState[category] = !isExpanded
+                                }
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "카테고리 $category",
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = Color.Black
+                            )
+                            Icon(
+                                imageVector = if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                                contentDescription = null
+                            )
+                        }
+                        if (isExpanded) {
+                            ingredientsByCategory[index].chunked(2).forEach { pair ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    pair.forEach { ingredient ->
+                                        val isContained = userContainIngredients.contains(ingredient.id)
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Checkbox(
+                                                checked = selectedIngredients.contains(ingredient.name),
+                                                onCheckedChange = {
+                                                    if (it) {
+                                                        selectedIngredients = selectedIngredients + ingredient.name
+                                                    } else {
+                                                        selectedIngredients = selectedIngredients - ingredient.name
+                                                    }
+                                                }
+                                            )
+                                            Text(
+                                                text = ingredient.name,
+                                                color = if (isContained) Color.Red else Color.Unspecified
+                                            )
+                                        }
+                                    }
                                 }
                             }
-                        )
-                        Text(text = ingredient)
+                        }
                     }
                 }
             }
