@@ -21,7 +21,7 @@ fun NavGraphBuilder.mainNavGraph(navController: NavHostController,
     navigation(startDestination = "Fridge", route="Home"){
 
         composable(route = Routes.Fridge.route) {
-            FridgeScreen(navController, userDataViewModel)
+            FridgeScreen(navController, userDataViewModel, userDataDBViewModel)
         }
 
         composable(route = Routes.Search.route) {

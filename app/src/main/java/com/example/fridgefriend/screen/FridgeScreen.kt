@@ -1,13 +1,6 @@
 package com.example.fridgefriend.screen
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,21 +9,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,26 +19,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.fridgefriend.database.UserDataDB
 import com.example.fridgefriend.database.UserDataDBViewModel
-import com.example.fridgefriend.viewmodel.CardDataViewModel
 import com.example.fridgefriend.viewmodel.IngredientDataViewModel
-import com.example.fridgefriend.viewmodel.UserData
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
-
 @Composable
-fun FridgeScreen(navController: NavHostController,
-                 userDataViewModel: UserDataViewModel,
-                 userDataDBViewModel: UserDataDBViewModel,
-                 ingredientDataViewModel: IngredientDataViewModel = viewModel()) {
-
+fun FridgeScreen(
+    navController: NavHostController,
+    userDataViewModel: UserDataViewModel,
+    userDataDBViewModel: UserDataDBViewModel,
+    ingredientDataViewModel: IngredientDataViewModel = viewModel()
+) {
+    val userIndex = userDataViewModel.userIndex.value
     val scrollState = rememberScrollState()
     var expandedCategory by remember { mutableStateOf<String?>(null) }
     var showIngredientCheckDialog by remember { mutableStateOf(false) }
-    var user by remember { mutableStateOf<UserData?>(null) }
+
+    // 현재 사용자의 재료 보유 정보를 업데이트
+    LaunchedEffect(userDataViewModel.userList[userIndex].contain) {
+        ingredientDataViewModel.ingredientList.forEachIndexed { index, ingredient ->
+            userDataViewModel.userList[userIndex].contain[ingredient.id.toString()]?.let { expireDate ->
+                ingredientDataViewModel.changeExpireDate(index, expireDate)
+                ingredient.contain = true
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -85,29 +74,30 @@ fun FridgeScreen(navController: NavHostController,
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add Ingredient",
+                    contentDescription = "재료 추가",
                     modifier = Modifier.size(36.dp)
                 )
             }
         }
 
-        // 재료 체크 다이얼로그 표시
         if (showIngredientCheckDialog) {
             IngredientCheckDialog(
                 onDismissRequest = { showIngredientCheckDialog = false },
                 ingredientDataViewModel = ingredientDataViewModel,
-                userDataViewModel = userDataViewModel
+                userDataViewModel = userDataViewModel,
+                userDataDBViewModel = userDataDBViewModel
             )
         }
 
-        // 각 카테고리별 버튼 및 분류
-        CategoryButton("육류", listOf(201, 202, 203, 204, 205, 206, 208, 209, 247, 248), expandedCategory, { expandedCategory = it }, ingredientDataViewModel, user, userDataViewModel)
-        CategoryButton("해산물", listOf(207, 232, 233, 234, 235, 236, 237, 244, 246), expandedCategory, { expandedCategory = it }, ingredientDataViewModel, user, userDataViewModel)
-        CategoryButton("야채", listOf(210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231), expandedCategory, { expandedCategory = it }, ingredientDataViewModel, user, userDataViewModel)
-        CategoryButton("기타", listOf(238, 239, 240, 241, 242, 243, 245, 249, 250, 251, 252), expandedCategory, { expandedCategory = it }, ingredientDataViewModel, user, userDataViewModel)
+        // 각 카테고리 버튼
+        CategoryButton("육류", listOf(201, 202, 203, 204, 205, 206, 208, 209, 247, 248), expandedCategory, { expandedCategory = it }, ingredientDataViewModel, userDataViewModel)
+        CategoryButton("해산물", listOf(207, 232, 233, 234, 235, 236, 237, 244, 246), expandedCategory, { expandedCategory = it }, ingredientDataViewModel, userDataViewModel)
+        CategoryButton("야채", listOf(210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231), expandedCategory, { expandedCategory = it }, ingredientDataViewModel, userDataViewModel)
+        CategoryButton("기타", listOf(238, 239, 240, 241, 242, 243, 245, 249, 250, 251, 252), expandedCategory, { expandedCategory = it }, ingredientDataViewModel, userDataViewModel)
     }
 }
 
+// 카테고리 버튼
 @Composable
 fun CategoryButton(
     title: String,
@@ -115,10 +105,11 @@ fun CategoryButton(
     expandedCategory: String?,
     onCategoryClick: (String?) -> Unit,
     ingredientDataViewModel: IngredientDataViewModel,
-    user: UserData?,
     userDataViewModel: UserDataViewModel
 ) {
     val isExpanded = expandedCategory == title
+    val userIndex = userDataViewModel.userIndex.value
+    val user = userDataViewModel.userList[userIndex]
 
     Column {
         TextButton(
@@ -143,19 +134,25 @@ fun CategoryButton(
         }
 
         if (isExpanded) {
-            Column(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-            ) {
-                user?.contain?.forEach { (ingredientId, expireDate) ->
-                    val ingredient = ingredientDataViewModel.ingredientList.find { it.id.toString() == ingredientId }
-                    ingredient?.let {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(text = it.name)
-                            Text(text = expireDate, fontSize = 14.sp)
+            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
+                val categoryIngredients = user.contain.filter { (ingredientId, _) ->
+                    ids.contains(ingredientId.toInt())
+                }
+
+                if (categoryIngredients.isEmpty()) {
+                    Text(text = "보유 재료 없음", fontSize = 14.sp, color = Color.Gray)
+                } else {
+                    categoryIngredients.forEach { (ingredientId, expireDate) ->
+                        val ingredient = ingredientDataViewModel.ingredientList.find { it.id.toString() == ingredientId }
+                        ingredient?.let {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(text = it.name)
+                                Text(text = "유통기한: $expireDate", fontSize = 14.sp)
+                            }
                         }
                     }
                 }
@@ -164,11 +161,13 @@ fun CategoryButton(
     }
 }
 
+// 재료 체크 화면
 @Composable
 fun IngredientCheckDialog(
     onDismissRequest: () -> Unit,
     ingredientDataViewModel: IngredientDataViewModel,
-    userDataViewModel: UserDataViewModel
+    userDataViewModel: UserDataViewModel,
+    userDataDBViewModel: UserDataDBViewModel
 ) {
     var selectedCategory by remember { mutableStateOf<String?>(null) }
 
@@ -189,14 +188,12 @@ fun IngredientCheckDialog(
             }
         },
         text = {
-            LazyColumn(
-                modifier = Modifier.fillMaxHeight(0.8f)
-            ) {
+            LazyColumn(modifier = Modifier.fillMaxHeight(0.8f)) {
                 item {
-                    CategoryCheckSection("육류", listOf(1, 2, 3, 4, 5, 6, 8, 9, 47, 48), selectedCategory, { selectedCategory = it }, ingredientDataViewModel, userDataViewModel)
-                    CategoryCheckSection("해산물", listOf(7, 32, 33, 34, 35, 36, 37, 44, 46), selectedCategory, { selectedCategory = it }, ingredientDataViewModel, userDataViewModel)
-                    CategoryCheckSection("야채", listOf(10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31), selectedCategory, { selectedCategory = it }, ingredientDataViewModel, userDataViewModel)
-                    CategoryCheckSection("기타", listOf(38, 39, 40, 41, 42, 43, 45, 49, 50, 51, 52), selectedCategory, { selectedCategory = it }, ingredientDataViewModel, userDataViewModel)
+                    CategoryCheckSection("육류", listOf(201, 202, 203, 204, 205, 206, 208, 209, 247, 248), selectedCategory, { selectedCategory = it }, ingredientDataViewModel, userDataViewModel, userDataDBViewModel)
+                    CategoryCheckSection("해산물", listOf(207, 232, 233, 234, 235, 236, 237, 244, 246), selectedCategory, { selectedCategory = it }, ingredientDataViewModel, userDataViewModel, userDataDBViewModel)
+                    CategoryCheckSection("야채", listOf(210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231), selectedCategory, { selectedCategory = it }, ingredientDataViewModel, userDataViewModel, userDataDBViewModel)
+                    CategoryCheckSection("기타", listOf(238, 239, 240, 241, 242, 243, 245, 249, 250, 251, 252), selectedCategory, { selectedCategory = it }, ingredientDataViewModel, userDataViewModel, userDataDBViewModel)
                 }
             }
         },
@@ -208,6 +205,7 @@ fun IngredientCheckDialog(
     )
 }
 
+// 식재료 보유 여부 체크 섹션
 @Composable
 fun CategoryCheckSection(
     title: String,
@@ -220,16 +218,14 @@ fun CategoryCheckSection(
 ) {
     val isExpanded = selectedCategory == title
     val checkedState = remember { mutableStateMapOf<Int, Boolean>() }
-    val dialogState = remember { mutableStateMapOf<Int, Boolean>() }
+    var showExpireDateDialog by remember { mutableStateOf<Int?>(null) }
+    val userIndex = userDataViewModel.userIndex.value
+    val user = userDataViewModel.userList[userIndex]
 
     Column {
         TextButton(
-            onClick = {
-                onCategoryClick(if (isExpanded) "" else title)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
+            onClick = { onCategoryClick(if (isExpanded) "" else title) },
+            modifier = Modifier.fillMaxWidth().padding(10.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -245,19 +241,14 @@ fun CategoryCheckSection(
         }
 
         if (isExpanded) {
-            Column(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-            ) {
+            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
                 ids.forEach { id ->
-                    val ingredient = ingredientDataViewModel.ingredientList.getOrNull(id - 1)
+                    val ingredient = ingredientDataViewModel.ingredientList.find { it.id == id }
                     ingredient?.let {
-                        val isChecked = checkedState.getOrPut(it.id - 1) { it.contain }
-                        val showExpireDateDialog = dialogState.getOrPut(it.id - 1) { false }
+                        val isChecked = checkedState.getOrPut(it.id) { user.contain.containsKey(it.id.toString()) }
 
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(4.dp),
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
@@ -266,10 +257,19 @@ fun CategoryCheckSection(
                                     checked = isChecked,
                                     onCheckedChange = { checked ->
                                         if (checked) {
-                                            dialogState[it.id - 1] = true
+                                            showExpireDateDialog = it.id
                                         } else {
-                                            userDataViewModel.(it.id)
-                                            checkedState[it.id - 1] = false
+                                            checkedState[it.id] = false
+                                            user.contain.remove(it.id.toString())
+
+                                            userDataDBViewModel.insertItem(UserDataDB(
+                                                id = user.id,
+                                                pw = user.pw,
+                                                name = user.name,
+                                                favourite = user.favourite,
+                                                memo = user.memo,
+                                                contain = user.contain.toMap()
+                                            ))
                                         }
                                     }
                                 )
@@ -277,14 +277,22 @@ fun CategoryCheckSection(
                             }
                         }
 
-                        if (showExpireDateDialog) {
+                        if (showExpireDateDialog == it.id) {
                             ExpireDateDialog(
-                                onDismissRequest = { dialogState[it.id - 1] = false },
+                                onDismissRequest = { showExpireDateDialog = null },
                                 onExpireDateConfirm = { expireDate ->
-                                    userDataViewModel.addExpireDateToContain(it.id, expireDate)
-                                    userDataDBViewModel.updateItem()
-                                    checkedState[it.id - 1] = true
-                                    dialogState[it.id - 1] = false
+                                    user.contain[it.id.toString()] = expireDate
+
+                                    userDataDBViewModel.insertItem(UserDataDB(
+                                        id = user.id,
+                                        pw = user.pw,
+                                        name = user.name,
+                                        favourite = user.favourite,
+                                        memo = user.memo,
+                                        contain = user.contain.toMap()
+                                    ))
+                                    checkedState[it.id] = true
+                                    showExpireDateDialog = null
                                 }
                             )
                         }
@@ -295,6 +303,7 @@ fun CategoryCheckSection(
     }
 }
 
+// 유통기한 입력
 @Composable
 fun ExpireDateDialog(
     onDismissRequest: () -> Unit,
@@ -325,9 +334,7 @@ fun ExpireDateDialog(
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = {
-            Text(text = "유통기한 입력")
-        },
+        title = { Text(text = "유통기한 입력") },
         text = {
             Column {
                 TextField(
