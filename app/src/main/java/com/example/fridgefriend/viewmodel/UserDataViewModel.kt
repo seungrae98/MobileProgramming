@@ -13,6 +13,9 @@ class UserDataViewModel : ViewModel(){
     var userList = mutableStateListOf<UserData>()
         private set
 
+    var loggedInUserId: String? = null
+        private set
+
     var userIndex = mutableIntStateOf(0)
     var loginStatus = mutableStateOf( false )
 
@@ -78,5 +81,9 @@ class UserDataViewModel : ViewModel(){
             contain = userList[index].contain.toMap(),
         )
         userDataDBViewModel.updateItem(userSample)
+    }
+
+    fun setLoggedInUserId(userId: String) {
+        loggedInUserId = userId
     }
 }
