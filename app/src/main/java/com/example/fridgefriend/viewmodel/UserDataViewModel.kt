@@ -1,5 +1,6 @@
 package com.example.fridgefriend.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +64,7 @@ class UserDataViewModel : ViewModel(){
             contain = userData.contain.toMap(),
         )
         userDataDBViewModel.insertItem(userSample)
+        userList.add(userData)
     }
 
     fun changePw(userDataDBViewModel: UserDataDBViewModel, index: Int, newPw: String) {

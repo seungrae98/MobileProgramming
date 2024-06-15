@@ -87,7 +87,7 @@ fun MainScreen(navController: NavHostController) {
                     }
 
                     composable(route = Routes.Register.route) {
-                        RegisterScreen(navController, userDataViewModel)
+                        RegisterScreen(navController, userDataDBViewModel ,userDataViewModel)
                     }
 
                     mainNavGraph(navController, userDataDBViewModel, userDataViewModel)
