@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.firebase.database)
+    implementation(libs.androidx.material.icons.extended)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
