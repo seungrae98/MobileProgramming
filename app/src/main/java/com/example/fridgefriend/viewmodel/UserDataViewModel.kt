@@ -1,5 +1,6 @@
 package com.example.fridgefriend.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +11,9 @@ import com.example.fridgefriend.database.UserDataDBViewModel
 class UserDataViewModel : ViewModel(){
 
     var userList = mutableStateListOf<UserData>()
+        private set
+
+    var loggedInUserId: String? = null
         private set
 
     var userIndex = mutableIntStateOf(0)
@@ -63,6 +67,7 @@ class UserDataViewModel : ViewModel(){
             contain = userData.contain.toMap(),
         )
         userDataDBViewModel.insertItem(userSample)
+        userList.add(userData)
     }
 
     fun changePw(userDataDBViewModel: UserDataDBViewModel, index: Int, newPw: String) {
@@ -76,5 +81,9 @@ class UserDataViewModel : ViewModel(){
             contain = userList[index].contain.toMap(),
         )
         userDataDBViewModel.updateItem(userSample)
+    }
+
+    fun setLoggedInUserId(userId: String) {
+        loggedInUserId = userId
     }
 }
