@@ -57,6 +57,16 @@ class UserDataViewModel : ViewModel(){
         return false
     }
 
+    fun checkID(id: String): Boolean {
+        // 유저 id 비교 후 같은 id가 있을 경우 true 반환
+        repeat(userList.size) {
+            if (userList[it].id == id) {
+                return true
+            }
+        }
+        return false
+    }
+
     fun addUserData(userDataDBViewModel: UserDataDBViewModel, userData: UserData) {
         val userSample = UserDataDB(
             id = userData.id,
