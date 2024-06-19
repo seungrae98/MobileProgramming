@@ -1,11 +1,13 @@
 package com.example.fridgefriend.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -15,12 +17,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.fridgefriend.database.Repository
 import com.example.fridgefriend.database.UserDataDBViewModel
 import com.example.fridgefriend.database.UserDataViewModelFactory
@@ -29,8 +33,7 @@ import com.example.fridgefriend.viewmodel.UserDataViewModel
 import com.example.fridgefriend.navigation.Routes
 import com.example.fridgefriend.navigation.mainNavGraph
 import com.example.fridgefriend.viewmodel.UserData
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
+import com.google.firebase.database.FirebaseDatabase
 
 @Composable
 fun rememberViewModelStoreOwner(): ViewModelStoreOwner {
@@ -48,7 +51,7 @@ val LocalNavGraphViewModelStoreOwner =
 fun MainScreen(navController: NavHostController) {
 
     val context = LocalContext.current
-    val table = Firebase.database.getReference("UserDB/users")
+    val table = FirebaseDatabase.getInstance().getReference("UserDB/users")
     val userDataDBViewModel: UserDataDBViewModel = viewModel(factory = UserDataViewModelFactory(Repository(table)))
     var selectedUser by remember {
         mutableStateOf<UserData?>(null)
@@ -66,10 +69,16 @@ fun MainScreen(navController: NavHostController) {
         userDataViewModel.getUserData(userList)
 
         Scaffold(
+            modifier = Modifier.background(Color(0xFFF68056)), // 전체 배경색 설정
             topBar = {
-                TopAppBar(
-                    title = { Text(text = "Fridge Friend") }
-                )
+                if (userDataViewModel.loginStatus.value) {
+                    TopAppBar(
+                        title = { Text(text = "Fridge Friend", color = Color.White) },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color(0xFFD95A43) // TopAppBar 배경색 설정
+                        )
+                    )
+                }
             },
             bottomBar = {
                 if (userDataViewModel.loginStatus.value)
@@ -77,7 +86,11 @@ fun MainScreen(navController: NavHostController) {
             }
         ) { contentPadding ->
 
-            Column(modifier = Modifier.padding(contentPadding)) {
+            Column(
+                modifier = Modifier
+                    .padding(contentPadding)
+                    .background(Color(0xFFF68056)) // Column 배경색 설정
+            ) {
                 NavHost(
                     navController = navController,
                     startDestination = Routes.Login.route
@@ -87,7 +100,7 @@ fun MainScreen(navController: NavHostController) {
                     }
 
                     composable(route = Routes.Register.route) {
-                        RegisterScreen(navController, userDataDBViewModel ,userDataViewModel)
+                        RegisterScreen(navController, userDataDBViewModel, userDataViewModel)
                     }
 
                     mainNavGraph(navController, userDataDBViewModel, userDataViewModel)
