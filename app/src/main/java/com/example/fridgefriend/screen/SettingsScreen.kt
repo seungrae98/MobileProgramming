@@ -1,6 +1,7 @@
 package com.example.fridgefriend.screen
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,6 +54,7 @@ fun SettingsScreen(navController: NavHostController,
     }
 
     Column(modifier = Modifier.fillMaxSize()
+        .background(Color(0xFFF68056))
         .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start) {
@@ -65,7 +68,7 @@ fun SettingsScreen(navController: NavHostController,
             onClick = {
                 isChangePwDialogVisible = true // Show the change password dialog
             },
-            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43)),
             contentPadding = PaddingValues(horizontal = 16.dp) // Adjust padding as needed
         ) {
             Row(
@@ -85,7 +88,7 @@ fun SettingsScreen(navController: NavHostController,
                     launchSingleTop = true
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43)),
             contentPadding = PaddingValues(horizontal = 16.dp) // Adjust padding as needed
         ) {
             Row(
@@ -94,47 +97,6 @@ fun SettingsScreen(navController: NavHostController,
                 horizontalArrangement = Arrangement.Start
             ) {
                 Text(text = "로그아웃")
-            }
-        }
-
-        Button(
-            onClick = {
-                val url = "https://www.10000recipe.com/recipe/4579916"
-                navController.navigate(Routes.WebView.route + "/${URLEncoder.encode(url, "UTF-8")}")
-            },
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 16.dp) // Adjust padding as needed
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Text(text = "웹 뷰 열기")
-            }
-        }
-
-        Button(
-            onClick = {
-                val userDataDBSample4 = UserDataDB(
-                    "id4",
-                    "1234",
-                    "user4",
-                    listOf<Int>(101, 102, 103, 105),
-                    mapOf<String, String>("103" to "memo for card3 from user4", "104" to "memo for card4 from user4", "105" to "memo for card5 from user4"),
-                    mapOf<String, String>("202" to "20240601", "204" to "20240602")
-                )
-                userDataDBViewModel.insertItem(userDataDBSample4)
-            },
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 16.dp) // Adjust padding as needed
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Text(text = "유저 추가 예시 버튼")
             }
         }
     }
@@ -158,10 +120,11 @@ fun ChangePasswordDialog(onDismiss: () -> Unit, onChangePassword: (String) -> Un
     var isPasswordMatching by remember { mutableStateOf(true) }
 
     AlertDialog(
+        containerColor = Color(0xFFF2BC70),
         onDismissRequest = onDismiss,
         title = { Text(text = "Change Password") },
         text = {
-            Column {
+            Column() {
                 OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
@@ -193,14 +156,16 @@ fun ChangePasswordDialog(onDismiss: () -> Unit, onChangePassword: (String) -> Un
                     } else {
                         isPasswordMatching = false
                     }
-                }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43))
             ) {
                 Text("변경")
             }
         },
         dismissButton = {
             Button(
-                onClick = onDismiss
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43))
             ) {
                 Text("취소")
             }

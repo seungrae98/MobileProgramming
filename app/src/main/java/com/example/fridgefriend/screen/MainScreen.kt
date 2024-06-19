@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +30,9 @@ import com.example.fridgefriend.viewmodel.UserDataViewModel
 import com.example.fridgefriend.navigation.Routes
 import com.example.fridgefriend.navigation.mainNavGraph
 import com.example.fridgefriend.viewmodel.UserData
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 
@@ -43,7 +47,7 @@ val LocalNavGraphViewModelStoreOwner =
         error("Undefined")
     }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
 
@@ -54,8 +58,14 @@ fun MainScreen(navController: NavHostController) {
         mutableStateOf<UserData?>(null)
     }
     val userList by userDataDBViewModel.userList.collectAsState()
-
     val navStoreOwner = rememberViewModelStoreOwner()
+
+    val permission = rememberPermissionState(
+        android.Manifest.permission.POST_NOTIFICATIONS
+    )
+    LaunchedEffect(key1 = Unit) {
+        permission.launchPermissionRequest()
+    }
 
     CompositionLocalProvider(
         LocalNavGraphViewModelStoreOwner provides navStoreOwner
