@@ -63,20 +63,6 @@ fun FavouriteScreen(
             .fillMaxSize()
             .background(Color(0xFFF68056)) // 색2
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFFD95A43)) // 색1
-                .padding(vertical = 16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Fridge Friend",
-                color = Color.White,
-                fontSize = 24.sp
-            )
-        }
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
