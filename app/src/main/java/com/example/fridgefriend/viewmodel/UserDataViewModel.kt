@@ -19,19 +19,6 @@ class UserDataViewModel : ViewModel(){
     var userIndex = mutableIntStateOf(0)
     var loginStatus = mutableStateOf( false )
 
-    init {
-        // 예시로 하드코딩 했지만, DB에서 받아오는 방법도 있음
-        val userDataSample1 = UserData(
-            "id1",
-            "1234",
-            "user1",
-            mutableListOf<Int>(101, 102, 103),
-            mutableMapOf<String, String>("101" to "memo for card1 from user1", "105" to "memo for card5 from user1"),
-            mutableMapOf<String, String>("201" to "20240530", "202" to "20240531")
-        )
-        userList.add(userDataSample1)
-    }
-
     fun getUserData(userList: List<UserDataDB>) {
         userList.forEach {
             val userSample = UserData(

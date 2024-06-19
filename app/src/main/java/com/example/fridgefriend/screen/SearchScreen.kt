@@ -39,6 +39,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fridgefriend.database.UserDataDB
 import com.example.fridgefriend.database.UserDataDBViewModel
+import com.example.fridgefriend.ui.theme.Main1
+import com.example.fridgefriend.ui.theme.Main2
+import com.example.fridgefriend.ui.theme.Main3
 import com.example.fridgefriend.viewmodel.*
 import java.net.URLEncoder
 
@@ -95,7 +98,7 @@ fun SearchScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF68056)) // 색2
+            .background(Main1) // 색2
     ) {
         Column(
             modifier = Modifier
@@ -116,7 +119,7 @@ fun SearchScreen(
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp)
-                        .border(3.dp, Color(0xFFD95A43), RoundedCornerShape(28.dp)),
+                        .border(3.dp, Main2, RoundedCornerShape(28.dp)),
                     shape = RoundedCornerShape(28.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         containerColor = Color.White
@@ -133,7 +136,7 @@ fun SearchScreen(
                             Icon(
                                 imageVector = Icons.Filled.Search,
                                 contentDescription = "Search",
-                                tint = Color(0xFFD95A43), // 색1
+                                tint = Main2, // 색1
                                 modifier = Modifier.size(36.dp)
                             )
                         }
@@ -151,7 +154,7 @@ fun SearchScreen(
                 // 리스트/카드뷰 토글 버튼
                 Box(
                     modifier = Modifier
-                        .border(3.dp, Color(0xFFD95A43), RoundedCornerShape(16.dp))
+                        .border(3.dp, Main2, RoundedCornerShape(16.dp))
                         .clip(RoundedCornerShape(16.dp))
                         .width(140.dp)
                         .height(40.dp)
@@ -163,13 +166,13 @@ fun SearchScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
-                                .background(if (isListView) Color(0xFFD95A43) else Color.White)
+                                .background(if (isListView) Main2 else Color.White)
                                 .clickable { isListView = true },
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "List",
-                                color = if (isListView) Color.White else Color(0xFFD95A43),
+                                color = if (isListView) Color.White else Main2,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -178,13 +181,13 @@ fun SearchScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
-                                .background(if (!isListView) Color(0xFFD95A43) else Color.White)
+                                .background(if (!isListView) Main2 else Color.White)
                                 .clickable { isListView = false },
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "Card",
-                                color = if (!isListView) Color.White else Color(0xFFD95A43),
+                                color = if (!isListView) Color.White else Main2,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -199,7 +202,7 @@ fun SearchScreen(
                         keyboardController?.hide()
                         focusManager.clearFocus()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43))
+                    colors = ButtonDefaults.buttonColors(containerColor = Main2)
                 ) {
                     Text(text = "보유 재료 검색", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 }
@@ -329,7 +332,7 @@ fun CardView(
             .width(300.dp)
             .padding(16.dp)
             .clip(RoundedCornerShape(8.dp))
-            .border(3.dp, Color(0xFFD95A43), RoundedCornerShape(8.dp))
+            .border(3.dp, Main2, RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(8.dp))
             .clickable { onCardClick(card) }
             .padding(16.dp)
@@ -408,7 +411,7 @@ fun ListView(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
             .background(Color.White, shape = RoundedCornerShape(8.dp))
-            .border(3.dp, Color(0xFFD95A43), RoundedCornerShape(8.dp))
+            .border(3.dp, Main2, RoundedCornerShape(8.dp))
             .padding(16.dp)
             .clickable { onCardClick(card) },
         verticalAlignment = Alignment.CenterVertically,
@@ -482,7 +485,7 @@ fun IngredientDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF2BC70), shape = RoundedCornerShape(16.dp))
+                .background(Main3, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
             Column(
@@ -587,14 +590,14 @@ fun IngredientDialog(
                 ) {
                     Button(
                         onClick = onDismissRequest,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43))
+                        colors = ButtonDefaults.buttonColors(containerColor = Main2)
                     ) {
                         Text("취소", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
                         onClick = { onApply(selectedIngredients) },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43))
+                        colors = ButtonDefaults.buttonColors(containerColor = Main2)
                     ) {
                         Text("적용", color = Color.White, fontWeight = FontWeight.Bold)
                     }
@@ -622,7 +625,7 @@ fun CardDetailDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF2BC70), shape = RoundedCornerShape(16.dp))
+                .background(Main3, shape = RoundedCornerShape(16.dp))
                 .padding(16.dp)
         ) {
             Column(
@@ -691,7 +694,7 @@ fun CardDetailDialog(
                         navController.navigate("webview/${URLEncoder.encode(url, "UTF-8")}")
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Main2),
                     contentPadding = PaddingValues(horizontal = 8.dp)
                 ) {
                     Text(text = "레시피 바로가기", color = Color.White, fontWeight = FontWeight.Bold)
@@ -710,7 +713,7 @@ fun CardDetailDialog(
                 ) {
                     Button(
                         onClick = onDismissRequest,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43))
+                        colors = ButtonDefaults.buttonColors(containerColor = Main2)
                     ) {
                         Text("취소", color = Color.White, fontWeight = FontWeight.Bold)
                     }
@@ -736,7 +739,7 @@ fun CardDetailDialog(
                             userDataDBViewModel.updateItem(userDBSample)
                             onDismissRequest()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43))
+                        colors = ButtonDefaults.buttonColors(containerColor = Main2)
                     ) {
                         Text("저장", color = Color.White, fontWeight = FontWeight.Bold)
                     }

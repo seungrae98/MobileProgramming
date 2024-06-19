@@ -1,5 +1,6 @@
 package com.example.fridgefriend.screen
 
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,7 +30,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -40,6 +44,8 @@ import com.example.fridgefriend.R
 import com.example.fridgefriend.database.UserDataDBViewModel
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 import com.example.fridgefriend.navigation.Routes
+import com.example.fridgefriend.ui.theme.Main1
+import com.example.fridgefriend.ui.theme.Main2
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +57,10 @@ fun LogInScreen(navController: NavHostController,
     var userPw by remember { mutableStateOf("") }
     var loginError by remember { mutableStateOf(false) }
     var errorMsg by remember { mutableStateOf("") }
+
+    val window = (LocalContext.current as Activity).window
+    window.statusBarColor = Main2.toArgb()
+    window.navigationBarColor = Main2.toArgb()
 
     fun validateInput(): Boolean {
         return when {
@@ -66,7 +76,7 @@ fun LogInScreen(navController: NavHostController,
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .background(Color(0xFFF68056)), // 전체 배경색 설정
+            .background(Main1), // 전체 배경색 설정
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -100,7 +110,7 @@ fun LogInScreen(navController: NavHostController,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .border(4.dp, Color(0xFFD95A43), RoundedCornerShape(8.dp))
+                        .border(4.dp, Main2, RoundedCornerShape(8.dp))
                         .background(Color.White, RoundedCornerShape(8.dp))
                         .padding(16.dp)
                 ) {
@@ -126,7 +136,7 @@ fun LogInScreen(navController: NavHostController,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .border(4.dp, Color(0xFFD95A43), RoundedCornerShape(8.dp))
+                        .border(4.dp, Main2, RoundedCornerShape(8.dp))
                         .background(Color.White, RoundedCornerShape(8.dp))
                         .padding(16.dp)
                 ) {
@@ -164,7 +174,7 @@ fun LogInScreen(navController: NavHostController,
                     loginError = true
                 }
             },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43)),
+            colors = ButtonDefaults.buttonColors(containerColor = Main2),
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
@@ -184,7 +194,7 @@ fun LogInScreen(navController: NavHostController,
                     }
                 }
             },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43)),
+            colors = ButtonDefaults.buttonColors(containerColor = Main2),
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))

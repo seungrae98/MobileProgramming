@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,9 @@ import androidx.navigation.NavHostController
 import com.example.fridgefriend.database.UserDataDBViewModel
 import com.example.fridgefriend.navigation.Routes
 import com.example.fridgefriend.database.UserDataDB
+import com.example.fridgefriend.ui.theme.Main1
+import com.example.fridgefriend.ui.theme.Main2
+import com.example.fridgefriend.ui.theme.Main3
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 import java.net.URLEncoder
 
@@ -55,22 +59,24 @@ fun SettingsScreen(navController: NavHostController,
     }
 
     Column(modifier = Modifier.fillMaxSize()
-        .background(Color(0xFFF68056))
+        .background(Main1)
         .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start) {
 
         Text(text = "사용자 설정",
             modifier = Modifier.fillMaxWidth()
-                .padding(start = 8.dp, bottom = 8.dp),
-            fontSize = 24.sp)
+                .padding(start = 8.dp, bottom = 16.dp),
+            fontSize = 24.sp,
+            color = Color.White,
+            fontWeight = FontWeight.Bold)
 
         Button(
             onClick = {
-                isChangePwDialogVisible = true // Show the change password dialog
+                isChangePwDialogVisible = true
             },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43)),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp) // Adjust padding as needed
+            colors = ButtonDefaults.buttonColors(containerColor = Main2),
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -92,8 +98,8 @@ fun SettingsScreen(navController: NavHostController,
                     launchSingleTop = true
                 }
             },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43)),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp) // Adjust padding as needed
+            colors = ButtonDefaults.buttonColors(containerColor = Main2),
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -127,7 +133,7 @@ fun ChangePasswordDialog(onDismiss: () -> Unit, onChangePassword: (String) -> Un
     var isPasswordMatching by remember { mutableStateOf(true) }
 
     AlertDialog(
-        containerColor = Color(0xFFF2BC70),
+        containerColor = Main3,
         onDismissRequest = onDismiss,
         title = { Text(text = "Change Password") },
         text = {
@@ -164,7 +170,7 @@ fun ChangePasswordDialog(onDismiss: () -> Unit, onChangePassword: (String) -> Un
                         isPasswordMatching = false
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43))
+                colors = ButtonDefaults.buttonColors(containerColor = Main2)
             ) {
                 Text("변경")
             }
@@ -172,7 +178,7 @@ fun ChangePasswordDialog(onDismiss: () -> Unit, onChangePassword: (String) -> Un
         dismissButton = {
             Button(
                 onClick = onDismiss,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43))
+                colors = ButtonDefaults.buttonColors(containerColor = Main2)
             ) {
                 Text("취소")
             }

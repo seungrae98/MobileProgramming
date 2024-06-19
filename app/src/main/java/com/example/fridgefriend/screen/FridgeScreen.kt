@@ -1,5 +1,6 @@
 package com.example.fridgefriend.screen
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +16,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -23,6 +27,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fridgefriend.database.UserDataDB
 import com.example.fridgefriend.database.UserDataDBViewModel
+import com.example.fridgefriend.ui.theme.Main1
+import com.example.fridgefriend.ui.theme.Main2
+import com.example.fridgefriend.ui.theme.Main3
 import com.example.fridgefriend.viewmodel.IngredientDataViewModel
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 import java.time.LocalDate
@@ -202,7 +209,7 @@ fun IngredientCheckDialog(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xfff2bc70)),
+                    .background(Main3),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = "재료 체크", color = Color.Black, fontSize = (30.sp), fontWeight = FontWeight.Bold)
@@ -220,7 +227,7 @@ fun IngredientCheckDialog(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxHeight(0.8f)
-                    .background(Color(0xfff2bc70))
+                    .background(Main3)
             ) {
                 item {
                     CategoryCheckSection("육류", listOf(201, 202, 203, 204, 205, 206, 208, 209, 247, 248), selectedCategory, { selectedCategory = it }, ingredientDataViewModel, userDataViewModel, userDataDBViewModel)
@@ -237,7 +244,7 @@ fun IngredientCheckDialog(
                 Text("확인", color = Color.Black, fontSize = (20.sp))
             }
         },
-        containerColor = Color(0xfff2bc70)
+        containerColor = Main3
     )
 }
 
@@ -319,7 +326,7 @@ fun CategoryCheckSection(
                                         }
                                     },
                                     colors = CheckboxDefaults.colors(
-                                        checkedColor = Color(0xffd95a43),
+                                        checkedColor = Main2,
                                         uncheckedColor = Color.Black
                                     )
                                 )

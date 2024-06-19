@@ -13,13 +13,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.fridgefriend.ui.theme.Main2
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomNavigationBar(navController: NavController) {
 
     NavigationBar(
-        containerColor = Color(0xFFD95A43)
+        containerColor = Main2
     ) {
         val backStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = backStackEntry?.destination?.route
@@ -29,11 +30,10 @@ fun BottomNavigationBar(navController: NavController) {
                 selected = currentRoute == navItem.route,
                 onClick = {
                     navController.navigate(navItem.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true // 상태 저장
+                        popUpTo(navController.graph.findStartDestination().id){
+                            inclusive = true
                         }
                         launchSingleTop = true
-                        restoreState = true // 상태 복원
                     }
                 },
                 icon = {

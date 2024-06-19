@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fridgefriend.database.UserDataDBViewModel
+import com.example.fridgefriend.ui.theme.Main1
+import com.example.fridgefriend.ui.theme.Main2
 import com.example.fridgefriend.viewmodel.CardDataViewModel
 import com.example.fridgefriend.viewmodel.FavouriteViewModel
 import com.example.fridgefriend.viewmodel.UserDataViewModel
@@ -61,7 +63,7 @@ fun FavouriteScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF68056)) // 색2
+            .background(Main1) // 색2
     ) {
         Column(
             modifier = Modifier
@@ -76,7 +78,7 @@ fun FavouriteScreen(
                 // 리스트/카드뷰 토글 버튼
                 Box(
                     modifier = Modifier
-                        .border(3.dp, Color(0xFFD95A43), RoundedCornerShape(16.dp))
+                        .border(3.dp, Main2, RoundedCornerShape(16.dp))
                         .clip(RoundedCornerShape(16.dp))
                         .width(140.dp)
                         .height(40.dp)
@@ -88,13 +90,13 @@ fun FavouriteScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
-                                .background(if (isListView) Color(0xFFD95A43) else Color.White)
+                                .background(if (isListView) Main2 else Color.White)
                                 .clickable { isListView = true },
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "List",
-                                color = if (isListView) Color.White else Color(0xFFD95A43),
+                                color = if (isListView) Color.White else Main2,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -103,13 +105,13 @@ fun FavouriteScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
-                                .background(if (!isListView) Color(0xFFD95A43) else Color.White)
+                                .background(if (!isListView) Main2 else Color.White)
                                 .clickable { isListView = false },
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = "Card",
-                                color = if (!isListView) Color.White else Color(0xFFD95A43),
+                                color = if (!isListView) Color.White else Main2,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )

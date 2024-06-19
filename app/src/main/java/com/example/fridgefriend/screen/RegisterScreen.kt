@@ -39,6 +39,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fridgefriend.database.UserDataDBViewModel
 import com.example.fridgefriend.navigation.Routes
+import com.example.fridgefriend.ui.theme.Main1
+import com.example.fridgefriend.ui.theme.Main2
 import com.example.fridgefriend.viewmodel.CardDataViewModel
 import com.example.fridgefriend.viewmodel.UserData
 import com.example.fridgefriend.viewmodel.UserDataViewModel
@@ -91,7 +93,7 @@ fun RegisterScreen(navController: NavHostController,
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .background(Color(0xFFF68056)),
+            .background(Main1),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -115,7 +117,7 @@ fun RegisterScreen(navController: NavHostController,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .border(4.dp, Color(0xFFD95A43), RoundedCornerShape(8.dp))
+                        .border(4.dp, Main2, RoundedCornerShape(8.dp))
                         .background(Color.White, RoundedCornerShape(8.dp))
                         .padding(16.dp)
                 ) {
@@ -142,7 +144,7 @@ fun RegisterScreen(navController: NavHostController,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .border(4.dp, Color(0xFFD95A43), RoundedCornerShape(8.dp))
+                        .border(4.dp, Main2, RoundedCornerShape(8.dp))
                         .background(Color.White, RoundedCornerShape(8.dp))
                         .padding(16.dp)
                 ) {
@@ -169,7 +171,7 @@ fun RegisterScreen(navController: NavHostController,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .border(4.dp, Color(0xFFD95A43), RoundedCornerShape(8.dp))
+                        .border(4.dp, Main2, RoundedCornerShape(8.dp))
                         .background(Color.White, RoundedCornerShape(8.dp))
                         .padding(16.dp)
                 ) {
@@ -194,7 +196,7 @@ fun RegisterScreen(navController: NavHostController,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
-                        .border(4.dp, Color(0xFFD95A43), RoundedCornerShape(8.dp))
+                        .border(4.dp, Main2, RoundedCornerShape(8.dp))
                         .background(Color.White, RoundedCornerShape(8.dp))
                         .padding(16.dp)
                 ) {
@@ -245,7 +247,7 @@ fun RegisterScreen(navController: NavHostController,
                     regiError = true
                 }
             },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43)),
+            colors = ButtonDefaults.buttonColors(containerColor = Main2),
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))

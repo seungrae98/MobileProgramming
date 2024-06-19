@@ -22,26 +22,6 @@ class UserDataDBViewModel (private val repository: Repository) : ViewModel(){
     val userList = _itemList.asStateFlow()
 
     init {
-//        val userDataDBSample2 = UserDataDB(
-//            "id2",
-//            "1234",
-//            "user2",
-//            listOf<Int>(102, 105),
-//            mapOf<String, String>("102" to "memo for card2 from user2", "103" to "memo for card3 from user2", "104" to "memo for card4 from user2"),
-//            mapOf<String, String>("203" to "20240601", "204" to "20240602")
-//        )
-//        insertItem(userDataDBSample2)
-//
-//        val userDataDBSample3 = UserDataDB(
-//            "id3",
-//            "1234",
-//            "user3",
-//            listOf<Int>(101, 103, 105),
-//            mapOf<String, String>("101" to "memo for card1 from user3", "104" to "memo for card4 from user3"),
-//            mapOf<String, String>("201" to "20240530", "202" to "20240531", "203" to "20240606")
-//        )
-//        insertItem(userDataDBSample3)
-
         getAllItems()
     }
 
