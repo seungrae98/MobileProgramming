@@ -1,12 +1,12 @@
 package com.example.fridgefriend.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AllInbox
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.AllInbox
 import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -17,8 +17,8 @@ object NavBarItems{
     val BarItems = listOf(
         BarItem(
             title = "Fridge",
-            selectIcon = Icons.Default.Home,
-            onSelectedIcon = Icons.Outlined.Home,
+            selectIcon = Icons.Default.AllInbox,
+            onSelectedIcon = Icons.Outlined.AllInbox,
             route = "Fridge"
         ),
         BarItem(

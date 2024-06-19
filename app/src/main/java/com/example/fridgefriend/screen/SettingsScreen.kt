@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -62,21 +63,24 @@ fun SettingsScreen(navController: NavHostController,
         Text(text = "사용자 설정",
             modifier = Modifier.fillMaxWidth()
                 .padding(start = 8.dp, bottom = 8.dp),
-            fontSize = 20.sp)
+            fontSize = 24.sp)
 
         Button(
             onClick = {
                 isChangePwDialogVisible = true // Show the change password dialog
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43)),
-            contentPadding = PaddingValues(horizontal = 16.dp) // Adjust padding as needed
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp) // Adjust padding as needed
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                Text(text = "비밀번호 변경")
+                Text(
+                    text = "비밀번호 변경",
+                    fontSize = 20.sp
+                )
             }
         }
 
@@ -89,14 +93,17 @@ fun SettingsScreen(navController: NavHostController,
                 }
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD95A43)),
-            contentPadding = PaddingValues(horizontal = 16.dp) // Adjust padding as needed
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp) // Adjust padding as needed
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                Text(text = "로그아웃")
+                Text(
+                    text = "로그아웃",
+                    fontSize = 20.sp
+                )
             }
         }
     }
