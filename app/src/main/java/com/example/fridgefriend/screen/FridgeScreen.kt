@@ -117,6 +117,10 @@ fun CategoryButton(
     val userIndex = userDataViewModel.userIndex.value
     val user = userDataViewModel.userList[userIndex]
 
+    val categoryIngredientCount = user.contain.filter { (ingredientId, _) ->
+        ids.contains(ingredientId.toInt())
+    }.size
+
     Column {
         TextButton(
             onClick = {
@@ -131,7 +135,7 @@ fun CategoryButton(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = title, fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(text = "$title ($categoryIngredientCount)", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Color.White)
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                     contentDescription = null,
@@ -154,13 +158,20 @@ fun CategoryButton(
                 }
 
                 if (categoryIngredients.isEmpty()) {
-                    Text(text = "보유 재료 없음", fontSize = 16.sp, color = Color.White, modifier = Modifier.padding(vertical = 8.dp),)
+                    Text(
+                        text = "보유 재료 없음",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
                 } else {
                     categoryIngredients.forEach { (ingredientId, expireDate) ->
                         val ingredient = ingredientDataViewModel.ingredientList.find { it.id.toString() == ingredientId }
                         ingredient?.let {
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -249,7 +260,9 @@ fun CategoryCheckSection(
     Column {
         TextButton(
             onClick = { onCategoryClick(if (isExpanded) "" else title) },
-            modifier = Modifier.fillMaxWidth().padding(10.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -279,7 +292,9 @@ fun CategoryCheckSection(
                         val isChecked = checkedState.getOrPut(it.id) { user.contain.containsKey(it.id.toString()) }
 
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
