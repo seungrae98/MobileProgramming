@@ -11,14 +11,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -44,6 +41,7 @@ import com.example.fridgefriend.ui.theme.Main2
 import com.example.fridgefriend.ui.theme.Main3
 import com.example.fridgefriend.viewmodel.*
 import java.net.URLEncoder
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,19 +59,13 @@ fun SearchScreen(
     var searchQuery by remember { searchViewModel.searchQuery }
     var showIngredientDialog by rememberSaveable { mutableStateOf(false) }
     var selectedIngredients by remember { searchViewModel.selectedIngredients }
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = searchViewModel.scrollState.value)
-    val scrollState = rememberLazyListState(initialFirstVisibleItemIndex = searchViewModel.scrollState.value)
+    val listState = rememberLazyListState()
+    val scrollState = rememberLazyListState()
     var selectedCard by remember { searchViewModel.selectedCard }
-
-    // Save scroll state when leaving the screen
-    DisposableEffect(Unit) {
-        onDispose {
-            searchViewModel.scrollState.value = if (isListView) listState.firstVisibleItemIndex else scrollState.firstVisibleItemIndex
-        }
-    }
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    val coroutineScope = rememberCoroutineScope()
 
     // 좋아요 및 메모 정보 반영
     LaunchedEffect(Unit) {
@@ -95,6 +87,12 @@ fun SearchScreen(
         }
     }
 
+    // 스크롤 상태를 맨 위로 설정하는 함수
+    suspend fun resetListState() {
+        listState.scrollToItem(0)
+        scrollState.scrollToItem(0)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -113,10 +111,20 @@ fun SearchScreen(
                 OutlinedTextField(
                     value = searchText,
                     onValueChange = { searchText = it },
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            coroutineScope.launch {
+                                searchQuery = searchText
+                                keyboardController?.hide()
+                                focusManager.clearFocus()
+                                resetListState()
+                            }
+                        }
+                    ),
                     modifier = Modifier
                         .weight(1f)
-                        .height(48.dp)
+                        .height(56.dp)
                         .border(3.dp, Main2, RoundedCornerShape(28.dp)),
                     shape = RoundedCornerShape(28.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -125,9 +133,12 @@ fun SearchScreen(
                     trailingIcon = {
                         IconButton(
                             onClick = {
-                                searchQuery = searchText
-                                keyboardController?.hide()
-                                focusManager.clearFocus()
+                                coroutineScope.launch {
+                                    searchQuery = searchText
+                                    keyboardController?.hide()
+                                    focusManager.clearFocus()
+                                    resetListState()
+                                }
                             },
                             modifier = Modifier
                         ) {
@@ -196,13 +207,42 @@ fun SearchScreen(
                 // 보유 재료 검색 버튼
                 Button(
                     onClick = {
-                        showIngredientDialog = true
-                        keyboardController?.hide()
-                        focusManager.clearFocus()
+                        coroutineScope.launch {
+                            showIngredientDialog = true
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                            resetListState()
+                        }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Main2)
                 ) {
                     Text(text = "보유 재료 검색", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                }
+
+                // Reset button
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            searchQuery = ""
+                            searchText = ""
+                            isListView = true
+                            selectedIngredients = emptyList()
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                            resetListState()
+                        }
+                    },
+                    modifier = Modifier
+                        .size(40.dp)
+                        .border(3.dp, Main2, shape = RoundedCornerShape(20.dp))
+                        .background(Color.White, shape = RoundedCornerShape(20.dp))
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Reset",
+                        tint = Main2,
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
             }
 
@@ -292,8 +332,11 @@ fun SearchScreen(
                 focusManager.clearFocus()
             },
             onApply = { selected ->
-                selectedIngredients = selected
-                showIngredientDialog = false
+                coroutineScope.launch {
+                    selectedIngredients = selected
+                    showIngredientDialog = false
+                    resetListState()
+                }
             }
         )
     }
