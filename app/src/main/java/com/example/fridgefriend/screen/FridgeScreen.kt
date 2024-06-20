@@ -1,6 +1,9 @@
 package com.example.fridgefriend.screen
 
 import android.app.Activity
+import android.app.PendingIntent
+import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,8 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.fridgefriend.MainActivity
 import com.example.fridgefriend.database.UserDataDB
 import com.example.fridgefriend.database.UserDataDBViewModel
+import com.example.fridgefriend.makeNotification
 import com.example.fridgefriend.ui.theme.Main1
 import com.example.fridgefriend.ui.theme.Main2
 import com.example.fridgefriend.ui.theme.Main3
@@ -43,6 +48,7 @@ fun FridgeScreen(
     userDataDBViewModel: UserDataDBViewModel,
     ingredientDataViewModel: IngredientDataViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     val userIndex = userDataViewModel.userIndex.value
     val scrollState = rememberScrollState()
     var expandedCategory by remember { mutableStateOf<String?>(null) }
@@ -73,11 +79,11 @@ fun FridgeScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "내 냉장고",
+                text = "My Fridge",
                 style = MaterialTheme.typography.headlineMedium,
                 fontSize = 38.sp,
                 color = Color.White,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.ExtraBold
             )
             IconButton(
                 onClick = { showIngredientCheckDialog = true },

@@ -1,5 +1,7 @@
 package com.example.fridgefriend.viewmodel
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import java.text.SimpleDateFormat
@@ -430,37 +432,8 @@ class IngredientDataViewModel(): ViewModel() {
 
     }
 
-    // 보유 상태 변경
-    fun changeContain(index:Int) {
-        ingredientList[index] = ingredientList[index].copy(contain = !ingredientList[index].contain)
-    }
-
     // 유통기한 변경
     fun changeExpireDate(index:Int, expireDate:String) {
         ingredientList[index] = ingredientList[index].copy(expireDate = expireDate)
     }
-
-    fun searchIngredientBeforeExpire() : List<IngredientData> {
-        var ingredientPickList = mutableStateListOf<IngredientData>()
-
-        val date = Date(System.currentTimeMillis())
-
-        val calendar = Calendar.getInstance()
-        calendar.time = date
-        calendar.add(Calendar.DATE, 7) // Add 7 days to the current date
-        val dateAfter7Days = calendar.time
-
-        val dateFormat = "yyyyMMdd"
-        val simpleDateFormat = SimpleDateFormat(dateFormat)
-        val simpleDateAfter7Days: String = simpleDateFormat.format(dateAfter7Days)
-
-        repeat (ingredientList.size) {
-            if (ingredientList[it].expireDate.toInt() <= simpleDateAfter7Days.toInt()) {
-                ingredientPickList.add(ingredientList[it])
-            }
-        }
-
-        return ingredientPickList
-    }
-
 }

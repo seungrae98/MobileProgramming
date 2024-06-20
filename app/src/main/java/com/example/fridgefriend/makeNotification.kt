@@ -6,19 +6,18 @@ import android.app.PendingIntent
 import android.content.Context
 import androidx.core.app.NotificationCompat
 
-fun makeNotification(context: Context, msg: String, pendingIntent:PendingIntent) {
+fun makeNotification(context: Context, msg: String, pendingIntent: PendingIntent, notificationId: Int) {
     val channelId = "MyChannel"
     val channelName = "TimeCheckChannel"
-    val notificationId = 0
 
     val notificationChannel =
-        NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT)
+        NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
 
     val notificationManager=context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.createNotificationChannel(notificationChannel)
 
     val notification = NotificationCompat.Builder(context, channelId)
-        .setSmallIcon(R.drawable.baseline_notifications_24)
+        .setSmallIcon(R.mipmap.ic_launcher)
         .setContentTitle("유통기한 알림")
         .setContentText(msg)
         .setPriority(NotificationManager.IMPORTANCE_HIGH)

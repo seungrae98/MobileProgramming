@@ -1,6 +1,9 @@
 package com.example.fridgefriend.screen
 
 import android.app.Activity
+import android.app.PendingIntent
+import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,9 +27,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,21 +44,33 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.fridgefriend.MainActivity
 import com.example.fridgefriend.R
 import com.example.fridgefriend.database.UserDataDBViewModel
+import com.example.fridgefriend.makeNotification
 import com.example.fridgefriend.viewmodel.UserDataViewModel
 import com.example.fridgefriend.navigation.Routes
 import com.example.fridgefriend.ui.theme.Main1
 import com.example.fridgefriend.ui.theme.Main2
+import com.example.fridgefriend.viewmodel.IngredientData
+import com.example.fridgefriend.viewmodel.IngredientDataViewModel
+import kotlinx.coroutines.CoroutineScope
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogInScreen(navController: NavHostController,
                 userDataDBViewModel: UserDataDBViewModel,
-                userDataViewModel: UserDataViewModel) {
+                userDataViewModel: UserDataViewModel,
+                ingredientDataViewModel: IngredientDataViewModel = viewModel()) {
 
+    val context = LocalContext.current
     var userId by remember { mutableStateOf("") }
     var userPw by remember { mutableStateOf("") }
     var loginError by remember { mutableStateOf(false) }
@@ -161,6 +179,51 @@ fun LogInScreen(navController: NavHostController,
                     if (isSuccess) {
                         userDataViewModel.loginStatus.value = true
                         userDataViewModel.setLoggedInUserId(userId)
+
+                        val newIntent = Intent(context, MainActivity::class.java)
+                        newIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                                Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        val pendingIntent = PendingIntent.getActivity(
+                            context,
+                            100,
+                            newIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                        )
+
+                        val userIndex = userDataViewModel.userIndex.value
+                        var ingredientExpireList = mutableStateListOf<IngredientData>()
+                        var ingredientExpireDay = mutableStateListOf<Int>()
+                        val date = Date(System.currentTimeMillis())
+
+                        val calendar = Calendar.getInstance()
+                        calendar.time = date
+                        calendar.add(Calendar.DATE, 7)
+                        val dateAfter7Days = calendar.time
+
+                        val dateFormat = "yyyyMMdd"
+                        val simpleDateFormat = SimpleDateFormat(dateFormat)
+                        val simpleDate: String = simpleDateFormat.format(date)
+                        val simpleDateAfter7Days: String = simpleDateFormat.format(dateAfter7Days)
+
+                        ingredientDataViewModel.ingredientList.forEachIndexed { index, ingredient ->
+                            userDataViewModel.userList[userIndex].contain[ingredient.id.toString()]?.let { expireDate ->
+                                ingredient.expireDate = expireDate
+                                ingredient.contain = true
+                                if (ingredient.expireDate.toInt() <= simpleDateAfter7Days.toInt()) {
+                                    ingredientExpireList.add(ingredient)
+                                    ingredientExpireDay.add(ingredient.expireDate.toInt() - simpleDate.toInt())
+                                }
+                            }
+                        }
+
+                        repeat(ingredientExpireList.size) {
+                            if (ingredientExpireDay[it] >= 0)
+                                makeNotification(context, ingredientExpireList[it].name + " 유통기한이 " + ingredientExpireDay[it] +"일 남았습니다!", pendingIntent, ingredientExpireList[it].id)
+                            else
+                                makeNotification(context, ingredientExpireList[it].name + " 유통기한이 지났습니다.", pendingIntent, ingredientExpireList[it].id)
+                        }
+
                         navController.navigate(Routes.Home.route) {
                             popUpTo(Routes.Login.route) {
                                 inclusive = true

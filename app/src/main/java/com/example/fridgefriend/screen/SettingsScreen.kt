@@ -131,6 +131,25 @@ fun ChangePasswordDialog(onDismiss: () -> Unit, onChangePassword: (String) -> Un
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var isPasswordMatching by remember { mutableStateOf(true) }
+    var regiError by remember { mutableStateOf(false) }
+    var errorMsg by remember { mutableStateOf("") }
+
+    fun validateInput(): Boolean {
+        return when {
+            !Regex("^[a-zA-Z0-9!@#\$%^&*()_+]{4,20}\$").matches(newPassword) -> {
+                errorMsg = "비밀번호는 4~20자 이내의 영문 대소문자, 숫자, 특수문자만 사용 가능합니다"
+                false
+            }
+            newPassword != confirmPassword -> {
+                errorMsg = "서로 다른 비밀번호를 입력했습니다"
+                false
+            }
+            else -> {
+                regiError = false
+                true
+            }
+        }
+    }
 
     AlertDialog(
         containerColor = Main3,
@@ -152,9 +171,9 @@ fun ChangePasswordDialog(onDismiss: () -> Unit, onChangePassword: (String) -> Un
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
-                if (!isPasswordMatching) {
+                if (regiError) {
                     Text(
-                        text = "Passwords do not match",
+                        text = errorMsg,
                         color = Color.Red,
                         modifier = Modifier.padding(top = 8.dp)
                     )
@@ -164,10 +183,10 @@ fun ChangePasswordDialog(onDismiss: () -> Unit, onChangePassword: (String) -> Un
         confirmButton = {
             Button(
                 onClick = {
-                    if (newPassword == confirmPassword) {
+                    if (validateInput()) {
                         onChangePassword(newPassword)
                     } else {
-                        isPasswordMatching = false
+                        regiError = true
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Main2)

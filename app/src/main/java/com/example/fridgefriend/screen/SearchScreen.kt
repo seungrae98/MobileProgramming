@@ -98,7 +98,7 @@ fun SearchScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Main1) // 색2
+            .background(Main1)
     ) {
         Column(
             modifier = Modifier
@@ -110,8 +110,6 @@ fun SearchScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // 검색창
-                // 검색창
                 OutlinedTextField(
                     value = searchText,
                     onValueChange = { searchText = it },

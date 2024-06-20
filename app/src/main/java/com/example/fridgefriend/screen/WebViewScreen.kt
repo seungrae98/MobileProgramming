@@ -23,20 +23,19 @@ fun WebViewScreen(
 ) {
     val url = navBackStackEntry.arguments?.getString("url") ?: "https://www.example.com"
 
-//    Column(Modifier.fillMaxSize()) {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(8.dp),
-//            horizontalArrangement = Arrangement.End
-//        ) {
-//            CloseButton {
-//                navController.popBackStack()
-//            }
-//        }
-//        WebViewComponent(url)
-//    }
-    WebViewComponent(url)
+    Column(Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            CloseButton {
+                navController.popBackStack()
+            }
+        }
+        WebViewComponent(url)
+    }
 }
 
 @Composable

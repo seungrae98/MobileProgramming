@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -84,7 +85,7 @@ fun MainScreen(navController: NavHostController) {
             topBar = {
                 if (userDataViewModel.loginStatus.value) {
                     TopAppBar(
-                        title = { Text(text = "Fridge Friend", color = Color.White) },
+                        title = { Text(text = "Fridge Friend", color = Color.White, fontWeight = FontWeight.Bold) },
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = Main2 // TopAppBar 배경색 설정
                         )

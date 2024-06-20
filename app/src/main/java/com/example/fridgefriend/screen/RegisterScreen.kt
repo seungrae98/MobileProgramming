@@ -225,12 +225,6 @@ fun RegisterScreen(navController: NavHostController,
                             memo = mutableMapOf(),
                             contain = mutableMapOf()
                         )
-                        /*userDataViewModel.addUserData(userDataDBViewModel, newUser)
-                        navController.navigate(Routes.Login.route) {
-                            popUpTo(Routes.Register.route) {
-                                inclusive = true
-                            }
-                        }*/
                         if (userDataViewModel.checkID(userID)) {
                             regiError = true
                             errorMsg = "이미 존재하는 ID입니다."
